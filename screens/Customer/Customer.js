@@ -102,8 +102,6 @@ const Customer = () => {
     return item.customer_name.toLowerCase().includes(search.trim());
   });
 
-  const scale = size => (width / 375) * size;
-
   useFocusEffect(
     React.useCallback(() => {
       getCustomerData();
@@ -299,7 +297,7 @@ const Customer = () => {
                                     width: "100%",
                                   }}
                                 >
-                                  {truncateString(item.address, 10)}
+                                  {truncateString(item.address, 10) || "No Address"}
                                 </Text>
                               </View>
                             </View>

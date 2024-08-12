@@ -758,7 +758,7 @@ const Bodyparts = () => {
           presentationStyle="overFullScreen"
           onDismiss={toggleViewModalVisibility}
         >
-          <View style={styles.viewWrapper}>
+          <TouchableOpacity style={styles.viewWrapper} onPress={toggleViewModalVisibility}>
             <View style={styles.modalView}>
               <Text style={styles.modellabel}>Body Parts Name</Text>
               <TextInput
@@ -892,7 +892,7 @@ const Bodyparts = () => {
                 </View>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
         </Modal>
 
         {/* delete modal */}

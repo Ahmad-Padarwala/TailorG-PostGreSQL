@@ -19,6 +19,7 @@ import {
 import { AuthContext } from "../../middleware/AuthReducer";
 import axios from "axios";
 const PORT = process.env.EXPO_PUBLIC_API_URL;
+const { width, height } = Dimensions.get('screen');
 
 const Login = () => {
   const navigation = useNavigation();
@@ -69,7 +70,7 @@ const Login = () => {
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={[styles.container, { height: responsiveHeight(100) }]}>
         <View style={styles.loginHead}>
-          <View style={[styles.loginHeadText, { paddingLeft: responsiveWidth(18) }]}>
+          <View style={[styles.loginHeadText, { paddingLeft: width * 0.18 }]}>
             <Text style={styles.headingtext}>Welcome Back</Text>
             <Text style={styles.desctext}>Login To Continue</Text>
           </View>

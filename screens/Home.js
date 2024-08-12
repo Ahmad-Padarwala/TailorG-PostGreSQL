@@ -33,6 +33,7 @@ const Home = () => {
         console.error(err);
       });
   };
+
   //get customer data for length
   const [customerData, setCustomerData] = useState([]);
   const getCustomerData = async () => {
@@ -72,6 +73,17 @@ const Home = () => {
       console.error(error + "error in getting bank data");
     }
   };
+  const [pathData, setPathData] = useState([]);
+  const getPathData = async () => {
+    await axios
+      .get(`${PORT}/getpathesdata`)
+      .then((res) => {
+        setPathData(res.data[0]);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
   //get payment data
   const [paymentData, setPaymentData] = useState([]);
   const getPaymentData = async () => {
@@ -101,6 +113,14 @@ const Home = () => {
     } catch (error) {
       console.error(error + "error in getting customer data in customer page");
     }
+  };
+
+  const getFirstCharacter = (str) => {
+    if (str && str.length > 0) {
+      const [firstCharacter] = str;
+      return firstCharacter;
+    }
+    return "";
   };
   //get total due of customer
   const customerTotalDue = totalDueData.reduce((total, item) => {
@@ -146,6 +166,7 @@ const Home = () => {
       getPaymentData();
       getDataForTotalDue();
       getBankDetail();
+      getPathData();
       // getShopSomeDetail();
     }, [])
   );
@@ -178,16 +199,16 @@ const Home = () => {
                   width: responsiveWidth(9),
                   height: responsiveHeight(4.2),
                   marginHorizontal: responsiveWidth(3),
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: responsiveFontSize(10),
+                  fontFamily: "Regular",
                 }}
               >
-                <Image
-                  source={require("../assets/icon.png")}
-                  style={{
-                    width: responsiveWidth(6),
-                    height: responsiveHeight(4),
-                    marginHorizontal: "auto",
-                  }}
-                />
+                <Text>
+                  {getFirstCharacter(shopData.shop_name)}
+                </Text>
               </View>
               <View>
                 <Text style={{ color: whiteColor, fontFamily: "SemiBold" }}>
@@ -383,6 +404,7 @@ const Home = () => {
                   marginTop: responsiveHeight(1),
                   height: responsiveHeight(8.5),
                   paddingHorizontal: responsiveWidth(4),
+                  marginLeft: responsiveWidth(3),
                   paddingVertical: responsiveHeight(1.5),
                   borderRadius: 7,
                 }}
@@ -543,7 +565,7 @@ const Home = () => {
                       }}
                     >
                       <Image
-                        source={{ uri: `${PORT}/uploads/bank/${bankDetail[0].image}` }}
+                        source={{ uri: `${pathData.image_path}/uploads/bank/${bankDetail[0].image}` }}
                         style={{ width: "100%", height: responsiveHeight(12) }}
                       />
                     </View>
@@ -645,15 +667,15 @@ const Home = () => {
                 </View>
               )}
           </View>
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: responsiveHeight(1.8) }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
             <View>
-              <Text>Developed By :</Text>
+              <Text style={{ fontFamily: "Regular" }}>Developed By :</Text>
             </View>
-            <View>
+            <View style={{ paddingLeft: responsiveWidth(2) }}>
               <Image
-                source={require("../assets/images/valudaslogo.png")}
+                source={require("../assets/images/valudalogo.png")}
                 style={{
-                  width: responsiveWidth(27),
+                  width: responsiveWidth(30),
                   height: responsiveHeight(6),
                 }}
               />

@@ -32,9 +32,6 @@ const ShopEditProfile = () => {
 
   const { userToken } = useContext(AuthContext);
   const [shopData, setShopData] = useState([]);
-
-  const [image, setImage] = useState(null);
-  const [imageName, setImageName] = useState("");
   const getShopData = async () => {
     await axios
       .get(`${PORT}/getshopdata/${userToken}`)
@@ -96,8 +93,8 @@ const ShopEditProfile = () => {
   };
 
   const EditShopData = async () => {
-    const { first_name, last_name, shop_name, contact_number, email } = shopData;
-    const formdata = new FormData();
+    const { first_name, last_name, shop_name, contact_number, email } =
+      shopData;
     if (!first_name.trim()) {
       Alert.alert("Error", "Please enter First Name");
       return;
@@ -118,41 +115,18 @@ const ShopEditProfile = () => {
       Alert.alert("Error", "Please enter a valid Email Address");
       return;
     }
-
-    let imageobj = "";
-    if (image && image.startsWith("file://")) {
-      const fileType = image.substring(image.lastIndexOf(".") + 1);
-      imageobj = {
-        uri: image,
-        name: imageName,
-        type: `image/${fileType}`,
-      };
-      formdata.append("image", imageobj);
-    } else {
-      formdata.append("image", "NoImage.jpg");
-    }
-
-    formdata.append("first_name", shopData.first_name);
-    formdata.append("last_name", shopData.last_name);
-    formdata.append("shop_name", shopData.shop_name);
-    formdata.append("contact_number", shopData.contact_number);
-    formdata.append("email", shopData.email);
-
-    console.log("Submitting form data:", formdata);
     try {
-      const response = await axios.patch(
+      const response = await axios.put(
         `${PORT}/editshopdata/${userToken}`,
-        formdata
+        shopData
       );
       if (response.status === 200) {
-        console.log("Update successful:", response.data);
         navigation.navigate("Profile");
       }
     } catch (error) {
-      console.error("Error updating shop data:", error);
+      console.error(error + "error in the editing shop data!");
     }
   };
-
 
   return (
     <>

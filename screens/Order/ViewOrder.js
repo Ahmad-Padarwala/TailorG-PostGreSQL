@@ -48,6 +48,17 @@ const ViewOrder = ({ route }) => {
       setLoading(false);
     }
   };
+  const [pathData, setPathData] = useState([]);
+  const getPathData = async () => {
+    await axios
+      .get(`${PORT}/getpathesdata`)
+      .then((res) => {
+        setPathData(res.data[0]);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
   const formatDate = (date) => {
     let pdate = new Date(date);
     const day = pdate.getDate().toString().padStart(2, "0");
@@ -60,6 +71,11 @@ const ViewOrder = ({ route }) => {
     React.useCallback(() => {
       getCustomerOrder();
     }, [orderId])
+  );
+  useFocusEffect(
+    React.useCallback(() => {
+      getPathData();
+    }, [])
   );
 
   //delete
@@ -104,7 +120,7 @@ const ViewOrder = ({ route }) => {
       <SafeAreaView
         style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
       >
-        <ActivityIndicator size="large" color={primaryColor} />
+        <ActivityIndicator size={70} color={primaryColor} />
       </SafeAreaView>
     );
   }
@@ -203,7 +219,7 @@ const ViewOrder = ({ route }) => {
                     ) : (
                       <Image
                         source={{
-                          uri: `${PORT}/uploads/dresses/${viewOrder[0].dress_image}`,
+                          uri: `${pathData.image_path}/uploads/dresses/${viewOrder[0].dress_image}`,
                         }}
                         style={{
                           width: "70%",
@@ -383,6 +399,7 @@ const ViewOrder = ({ route }) => {
               </View>
             </View>
 
+            <Text style={[styles.label, { marginTop: responsiveHeight(3), }]}>Measurement Name</Text>
             <View style={styles.orderViewDetails}>
               <Text style={styles.dropdownMeaserText}>{viewOrder[0].name}</Text>
             </View>
@@ -419,7 +436,7 @@ const ViewOrder = ({ route }) => {
                 numberOfLines={3}
                 textAlignVertical="top"
                 multiline={true}
-                value={viewOrder[0].special_note || "Special note not aviable"}
+                value={viewOrder[0].special_note || ""}
                 editable={false}
               />
             </View>

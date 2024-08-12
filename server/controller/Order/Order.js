@@ -79,9 +79,9 @@ const getCustomerOrder = (req, res) => {
   const q = `SELECT 
   co.id,
   co.price AS order_price,
-  co.qty, 
-  co.order_date, 
-  co.delivery_date, 
+  co.qty,
+  (co.order_date AT TIME ZONE 'Asia/Kolkata') AT TIME ZONE 'UTC' AS order_date, 
+  (co.delivery_date AT TIME ZONE 'Asia/Kolkata') AT TIME ZONE 'UTC' AS delivery_date, 
   co.special_note, 
   co.urgent, 
   co.customer_measurement_id, 
@@ -181,44 +181,60 @@ WHERE
 };
 const getViewCustomerOrder = (req, res) => {
   const id = req.params.id;
+  console.log(id);
+
   const q = `SELECT 
-    co.*,
+    co.id,
+    co.price,
+    co.qty,
+    co.order_date::TEXT AS order_date,
+    co.delivery_date::TEXT AS delivery_date,
+    co.special_note,
+    co.urgent,
+    co.customer_measurement_id,
+    co.customer_id,
+    co.shop_id,
+    co.dress_id,
+    co.status,
     d.dress_name,
     d.dress_image,
-	  d.gender,
+    d.gender,
     c.customer_name,
-	  cm.id AS cm_id,
-	  cm.name,
-	  cmv.dresses_part_id,
-	  cmv.mea_value,
-	  dp.body_part_id,
-	  bp.part_name
-FROM 
+    cm.id AS cm_id,
+    cm.name,
+    cmv.dresses_part_id,
+    cmv.mea_value,
+    dp.body_part_id,
+    bp.part_name
+  FROM 
     customer_order co
-JOIN 
+  JOIN 
     dresses d ON co.dress_id = d.id
-JOIN 
+  JOIN 
     customer c ON co.customer_id = c.id
-JOIN 
+  JOIN 
     customer_measurement cm ON co.customer_measurement_id = cm.id
-JOIN 
+  JOIN 
     customer_measurement_value cmv ON cm.id = cmv.customer_measurement_id
-JOIN 
+  JOIN 
     dresses_part dp ON dp.id = cmv.dresses_part_id
-JOIN 
+  JOIN 
     body_parts bp ON bp.id = dp.body_part_id
-WHERE 
-    co.id = ${id};
-`;
+  WHERE 
+    co.id = ${id};`;
 
   client.query(q, (err, data) => {
     if (err) {
+      console.error(err);
       res.status(500).json({ msg: "Data Error" });
     } else {
+      console.log("object");
+      console.log(data.rows);
       res.status(200).json(data);
     }
   });
 };
+
 
 const DeleteOrder = async (req, res) => {
   const orderid = req.params.id;

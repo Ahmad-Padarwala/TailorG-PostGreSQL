@@ -83,7 +83,7 @@ const GetCurrDressBodyParts = async (req, res) => {
   try {
     console.log(gender);
     const q =
-    "SELECT dp.*, b.gender FROM public.dresses_part dp JOIN public.body_parts b ON dp.body_part_id = b.id WHERE b.gender =$4 AND dp.shop_id = $1 AND dp.dress_unique_number = $2 AND dp.dresses_id = $3";
+      "SELECT dp.*, b.gender FROM public.dresses_part dp JOIN public.body_parts b ON dp.body_part_id = b.id WHERE b.gender =$4 AND dp.shop_id = $1 AND dp.dress_unique_number = $2 AND dp.dresses_id = $3";
     const values = [shopid, uniquenumber, dressid, gender];
     client.query(q, values, (err, data) => {
       if (err) {
@@ -101,17 +101,12 @@ const GetCurrDressBodyParts = async (req, res) => {
 const EditDressBodyParts = async (req, res) => {
   const shopid = req.params.shopid;
   const dressid = req.params.dressid;
-
   const { dress_unique_number, selectedParts } = req.body;
   try {
     await client.query("BEGIN");
-
     const response = await client.query(
       "DELETE FROM dresses_part WHERE dresses_id = $1", [dressid]
     );
-
-    
-
     // Insert each part into dresses_body_part table
     for (const part of selectedParts) {
       const queryText =
@@ -123,11 +118,17 @@ const EditDressBodyParts = async (req, res) => {
     await client.query("COMMIT");
     res.status(200).json({ message: "Dress Added Successfully" });
   } catch (error) {
-    console.log(error);
     await client.query("ROLLBACK");
-    res.status(500).json({ message: error });
+    if (error.code === '23503' && error.constraint === 'dresses_part_id_fky') {
+      res.status(400).json({ message: "This dress is already used in measurement" });
+    } else {
+      console.log(error);
+      res.status(500).json({ message: "Internal server error" });
+    }
   }
 };
+
+
 module.exports = {
   GetDressBodyParts,
   AddDressBodyParts,

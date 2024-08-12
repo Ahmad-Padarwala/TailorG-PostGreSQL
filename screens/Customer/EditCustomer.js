@@ -65,14 +65,7 @@ const EditCustomer = ({ route }) => {
       alert("Please atleast enter 10 digit");
       return;
     }
-    if (editCustomerData.address == "") {
-      alert("Please Insert Customer Address");
-      return;
-    }
-    if (editCustomerData.pincode.length < 6) {
-      alert("Please atleast enter 6 digit");
-      return;
-    }
+   
     try {
       const response = await axios.put(`${PORT}/editcustomerdata/${id}`, editCustomerData)
       if (response.status === 200) {
@@ -200,7 +193,7 @@ const EditCustomer = ({ route }) => {
             </View>
 
             <View style={styles.inputfield}>
-              <Text style={styles.label}>Address <Text style={{ color: dangerColor }}>*</Text></Text>
+              <Text style={styles.label}>Address</Text>
               <TextInput
                 style={[styles.input, { borderRadius: responsiveWidth(2) }]}
                 numberOfLines={3}
@@ -223,7 +216,7 @@ const EditCustomer = ({ route }) => {
 
             <View style={{ marginTop: 20 }}>
               <TouchableOpacity style={styles.onlybtn} onPress={updateCustomerData}>
-                <Text style={styles.onlybtntext}>Update Customer</Text>
+                <Text style={styles.onlybtntext}>Update</Text>
               </TouchableOpacity>
             </View>
           </View>

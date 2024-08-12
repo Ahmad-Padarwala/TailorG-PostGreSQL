@@ -40,6 +40,10 @@ const EditPayment = ({ route }) => {
       const response = await axios.get(`${PORT}/getpaymentdatawithid/${id}`);
       const customerRows = response.data.rows[0];
       setEditPaymentData(customerRows);
+      setEditPaymentData((prevData) => ({
+        ...prevData,
+        payment_date: addOneDay(customerRows.payment_date),
+      }));
     } catch (error) {
       console.error(error + "error in getting payment data in all payment page");
     }
@@ -103,7 +107,7 @@ const EditPayment = ({ route }) => {
   const handleConfirm = (date) => {
     setEditPaymentData((prevData) => ({
       ...prevData,
-      payment_date: date,
+      payment_date: addOneDay(date),
     }));
     hideStartDatePicker();
   };
@@ -115,6 +119,19 @@ const EditPayment = ({ route }) => {
 
     return `${day}/${month}/${year}`;
   };
+
+  const addOneDay = (date) => {
+    const localDate = new Date(date);
+    localDate.setHours(0, 0, 0, 0);
+
+    // Convert the date to UTC format to prevent time zone shifts
+    const utcDate = new Date(
+      Date.UTC(localDate.getFullYear(), localDate.getMonth(), localDate.getDate())
+    );
+    return utcDate;
+  };
+
+
 
   const [totalAmount, setTotalAmount] = useState(0);
   useEffect(() => {

@@ -1,3 +1,4 @@
+
 import React, { forwardRef } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import Index from "./navigation/Index";
@@ -14,3 +15,4 @@ export default function App() {
     </AuthProvider>
   );
 }
+

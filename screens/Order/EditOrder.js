@@ -30,6 +30,17 @@ const EditOrder = ({ route }) => {
   const [newEditedOrder, setNewEditedOrder] = useState({});
   //get order
   const [editOrder, setEditOrder] = useState([]);
+  const [pathData, setPathData] = useState([]);
+  const getPathData = async () => {
+    await axios
+      .get(`${PORT}/getpathesdata`)
+      .then((res) => {
+        setPathData(res.data[0]);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
   const getCustomerOrder = async () => {
     try {
       const response = await axios.get(
@@ -56,6 +67,7 @@ const EditOrder = ({ route }) => {
     React.useCallback(() => {
       getCustomerOrder();
       // getDressData();
+      getPathData();
     }, [orderId])
   );
 
@@ -123,6 +135,7 @@ const EditOrder = ({ route }) => {
     }
     return text;
   };
+
   //update order
   const updateOrderData = async () => {
     try {
@@ -145,7 +158,7 @@ const EditOrder = ({ route }) => {
       <SafeAreaView
         style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
       >
-        <ActivityIndicator size="large" color={primaryColor} />
+        <ActivityIndicator size={70} color={primaryColor} />
       </SafeAreaView>
     );
   }
@@ -207,7 +220,7 @@ const EditOrder = ({ route }) => {
                       ) : (
                         <Image
                           source={{
-                            uri: `${PORT}/uploads/dresses/${editOrder[0].dress_image}`,
+                            uri: `${pathData.image_path}/uploads/dresses/${editOrder[0].dress_image}`,
                           }}
                           style={{
                             width: responsiveWidth(8),

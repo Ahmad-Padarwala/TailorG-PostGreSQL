@@ -47,11 +47,20 @@ const BankDetails = () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       alert('Permission Denied', 'We need camera roll permissions to make this work!');
-      console.log("object")
       return false;
     }
-    console.log(status)
     return true;
+  };
+  const [pathData, setPathData] = useState([]);
+  const getPathData = async () => {
+    await axios
+      .get(`${PORT}/getpathesdata`)
+      .then((res) => {
+        setPathData(res.data[0]);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
   const pickImage = async () => {
     const hasPermission = await requestPermission();
@@ -165,7 +174,6 @@ const BankDetails = () => {
         type: `image/${fileType}`,
       };
       formdata.append("image", imageobj);
-      console.log(imageobj)
     } else {
       formdata.append("image", bankDetails[0].image);
     }
@@ -198,6 +206,7 @@ const BankDetails = () => {
 
   useEffect(() => {
     getBankData();
+    getPathData();
   }, []);
 
   return (
@@ -278,7 +287,6 @@ const BankDetails = () => {
                   </View>
                 )
               }
-
             </View>
 
             <View style={styles.inputfield}>
@@ -348,7 +356,7 @@ const BankDetails = () => {
                   <Image source={{ uri: newImage }} style={{ width: "90%", height: "90%", borderRadius: 3 }} />
                 ) : (
                   <Image
-                    source={{ uri: `${PORT}/uploads/bank/${bankDetails[0].image}` }}
+                    source={{ uri: `${pathData.image_path}/uploads/bank/${bankDetails[0].image}` }}
                     style={{ width: "90%", height: "90%", borderRadius: 3 }}
                   />
                 )}

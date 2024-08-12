@@ -32,7 +32,17 @@ const EditDress = ({ route }) => {
   const [imageName, setImageName] = useState("");
   const [uniqueNumber, setUniqueNumber] = useState("");
   const { userToken } = useContext(AuthContext);
-
+  const [pathData, setPathData] = useState([]);
+  const getPathData = async () => {
+    await axios
+      .get(`${PORT}/getpathesdata`)
+      .then((res) => {
+        setPathData(res.data[0]);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
   // get Dress Detail
   const getDressData = async () => {
     try {
@@ -119,6 +129,7 @@ const EditDress = ({ route }) => {
   useFocusEffect(
     React.useCallback(() => {
       getDressData();
+      getPathData();
     }, [])
   );
 
@@ -267,7 +278,7 @@ const EditDress = ({ route }) => {
                   />
                 ) : (
                   <Image
-                    source={{ uri: `${PORT}/uploads/dresses/${image}` }}
+                    source={{ uri: `${pathData.image_path}/uploads/dresses/${image}` }}
                     style={{ width: "90%", height: "90%" }}
                   />
                 )}

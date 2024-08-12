@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   TextInput,
   FlatList,
+  ActivityIndicator,
   RefreshControl,
-  Dimensions
 } from "react-native";
 import {
   styles,
@@ -30,7 +30,6 @@ import { Feather } from "@expo/vector-icons";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import axios from "axios";
 import { AuthContext } from "../../middleware/AuthReducer";
-const { width, height } = Dimensions.get('screen');
 const PORT = process.env.EXPO_PUBLIC_API_URL;
 
 const AllPayments = ({ route }) => {
@@ -58,20 +57,7 @@ const AllPayments = ({ route }) => {
       setLoading(false);
     }
   };
-  //get shop data for recieved by column in payment table
-  const [shopData, setShopData] = useState([]);
-  const getShopData = async () => {
-    await axios
-      .get(`${PORT}/getshopdata/${userToken}`)
-      .then((res) => {
-        setShopData(res.data.rows[0]);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoading(false);
-      });
-  };
+
   //get cusromer name for showing cusromer name
   const [editCustomerData, setEditCustomerData] = useState([]);
   const getCustomerDataWithId = async () => {
@@ -129,7 +115,6 @@ const AllPayments = ({ route }) => {
   const onRefresh = async () => {
     setRefreshing(true);
     await getCustomerDataWithId();
-    await getShopData();
     await getPaymentData();
     await getDataForTotalDue();
     setRefreshing(false);
@@ -138,7 +123,6 @@ const AllPayments = ({ route }) => {
   useFocusEffect(
     React.useCallback(() => {
       getCustomerDataWithId();
-      getShopData();
       getPaymentData();
       getDataForTotalDue();
     }, [])
@@ -218,448 +202,467 @@ const AllPayments = ({ route }) => {
   return (
     <>
       <SafeAreaView style={{ backgroundColor: whiteColor, flex: 1 }}>
-        <View style={[styles.headerwithline, { flexDirection: "row" }]}>
-          <View style={{ width: responsiveWidth(12) }}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <MaterialIcons
-                name="arrow-back"
-                size={23}
-                color="black"
-                style={{
-                  alignSelf: "center",
-                  marginHorizontal: responsiveWidth(1),
-                  marginTop: responsiveHeight(0.4),
-                }}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={{ width: responsiveWidth(75) }}>
-            <Text
-              style={{
-                alignSelf: "center",
-                fontSize: responsiveFontSize(2.5),
-                fontFamily: "Medium",
-              }}
-            >
-              {truncateString(editCustomerData.customer_name, 7)} Payments
-            </Text>
-          </View>
-          <View style={{ width: responsiveWidth(12) }}>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("generatePdf", {
-                  customId: id,
-                  startDate: startDate,
-                  endDate: endDate,
-                })
-              }
-            >
-              <FontAwesome5 name="file-pdf" size={24} color="#BC1F1F" />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={styles.line70}></View>
-        <View
-          style={[
-            styles.flexstart,
-            {
-              marginBottom: responsiveHeight(3),
-            },
-          ]}
-        ></View>
-        <View style={styles.paymentsContainer}>
-          <TextInput
-            style={[
-              styles.input,
-              {
-                width: "100%",
-                borderBottomLeftRadius: 5,
-                borderTopLeftRadius: 5,
-                fontFamily: "Regular",
-                fontSize: responsiveFontSize(1.6),
-                paddingVertical: responsiveHeight(1),
-                paddingHorizontal: responsiveWidth(5),
-              },
-            ]}
-            placeholder="Search By Amount, Remark Or Payment Type"
-            underlineColorAndroid="transparent"
-            onChangeText={(e) => handleSearch(e)}
-            value={search}
-          />
-
+        {loading ? (
           <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginTop: responsiveHeight(3),
-            }}
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
-            <View style={styles.Dateinputfield}>
-              <Text style={styles.label}>Start Date</Text>
-              <TextInput
-                style={[
-                  styles.Dateinput,
-                  styles.disableInput,
-                  { fontSize: responsiveFontSize(1.5) },
-                ]}
-                value={formatDate(startDate)}
-                editable={false}
-              />
-              <TouchableOpacity
-                style={[styles.smalliconContainer]}
-                onPress={showStartDatePicker}
-              >
-                <FontAwesome5
-                  name="calendar-alt"
-                  size={17}
-                  color="black"
-                  style={{ marginTop: responsiveHeight(0.7) }}
-                />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.Dateinputfield}>
-              <Text style={styles.label}>End Date</Text>
-              <TextInput
-                style={[
-                  styles.Dateinput,
-                  styles.disableInput,
-                  { fontSize: responsiveFontSize(1.5) },
-                ]}
-                value={formatDate(endDate)}
-                editable={false}
-              />
-              <TouchableOpacity
-                style={styles.smalliconContainer}
-                onPress={showEndDatePicker}
-              >
-                <FontAwesome5
-                  name="calendar-alt"
-                  size={17}
-                  color="black"
-                  style={{ marginTop: responsiveHeight(0.7) }}
-                />
-              </TouchableOpacity>
-            </View>
-            <View style={{ width: responsiveWidth(7) }}>
-              <TouchableOpacity style={styles.searchicon} onPress={filterData}>
-                <Feather name="search" size={24} color={primaryColor} />
-              </TouchableOpacity>
-            </View>
+            <ActivityIndicator
+              size={70}
+              color={primaryColor}
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                flexDirection: "row",
+                justifyContent: "space-around",
+                padding: 10,
+              }}
+            />
           </View>
-        </View>
-        {filteredPaymentData != "" ? (
+        ) : (
           <>
-            <View style={styles.paymentsContainer}>
-              <View style={styles.paymentBox}>
-                <View style={styles.totalpayment}>
-                  <View style={{ marginHorizontal: responsiveWidth(2) }}>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        paddingBottom: responsiveHeight(1),
-                      }}
-                    >
-                      <View>
-                        <Text
-                          style={{
-                            fontSize: responsiveFontSize(1.8),
-                            fontFamily: "Regular",
-                          }}
-                        >
-                          Total Paid :
-                        </Text>
-                      </View>
-                      <View>
-                        <Text
-                          style={{
-                            fontSize: responsiveFontSize(1.8),
-                            fontFamily: "Regular",
-                            color: primaryColor,
-                          }}
-                        >
-                          {totalUserAmount.toFixed(2)}
-                        </Text>
-                      </View>
-                    </View>
-                    <View
-                      style={{
-                        flex: 0,
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        paddingBottom: responsiveHeight(1),
-                        borderBottomColor: "#0000001A",
-                        paddingBottom: responsiveHeight(1),
-                        borderBottomWidth: 1,
-                      }}
-                    >
-                      <View>
-                        <Text
-                          style={{
-                            fontSize: responsiveFontSize(1.8),
-                            fontFamily: "Regular",
-                          }}
-                        >
-                          Total Due :
-                        </Text>
-                      </View>
-                      <View>
-                        <Text
-                          style={{
-                            fontSize: responsiveFontSize(1.8),
-                            fontFamily: "Regular",
-                            color: dangerColor,
-                          }}
-                        >
-                          {parseFloat(customerTotalDue).toFixed(2)}
-                        </Text>
-                      </View>
-                    </View>
+            <View style={[styles.headerwithline, { flexDirection: "row" }]}>
+              <View style={{ width: responsiveWidth(12) }}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <MaterialIcons
+                    name="arrow-back"
+                    size={23}
+                    color="black"
+                    style={{
+                      alignSelf: "center",
+                      marginHorizontal: responsiveWidth(1),
+                      marginTop: responsiveHeight(0.4),
+                    }}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={{ width: responsiveWidth(75) }}>
+                <Text
+                  style={{
+                    alignSelf: "center",
+                    fontSize: responsiveFontSize(2.5),
+                    fontFamily: "Medium",
+                  }}
+                >
+                  {truncateString(editCustomerData.customer_name, 7)} Payments
+                </Text>
+              </View>
+              <View style={{ width: responsiveWidth(12) }}>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("generatePdf", {
+                      customId: id,
+                      startDate: startDate,
+                      endDate: endDate,
+                    })
+                  }
+                >
+                  <FontAwesome5 name="file-pdf" size={24} color="#BC1F1F" />
+                </TouchableOpacity>
+              </View>
+            </View>
 
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        paddingTop: responsiveHeight(1.5),
-                      }}
-                    >
-                      <View>
-                        <Text
-                          style={{
-                            fontSize: responsiveFontSize(1.8),
-                            fontFamily: "Medium",
-                            fontWeight: "bold",
-                          }}
-                        >
-                          Net Balance :
-                        </Text>
-                      </View>
-                      <View>
-                        <Text
-                          style={{
-                            fontSize: responsiveFontSize(1.8),
-                            fontFamily: "Regular",
-                            color:
-                              totalUserAmount - customerTotalDue >= 0
-                                ? primaryColor
-                                : dangerColor,
-                          }}
-                        >
-                          {parseFloat(
-                            totalUserAmount - customerTotalDue
-                          ).toFixed(2)}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
+            <View style={styles.line70}></View>
+            <View
+              style={[
+                styles.flexstart,
+                {
+                  marginBottom: responsiveHeight(3),
+                },
+              ]}
+            ></View>
+            <View style={styles.paymentsContainer}>
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    width: "100%",
+                    borderBottomLeftRadius: 5,
+                    borderTopLeftRadius: 5,
+                    fontFamily: "Regular",
+                    fontSize: responsiveFontSize(1.6),
+                    paddingVertical: responsiveHeight(1),
+                    paddingHorizontal: responsiveWidth(5),
+                  },
+                ]}
+                placeholder="Search By Amount, Remark Or Payment Type"
+                underlineColorAndroid="transparent"
+                onChangeText={(e) => handleSearch(e)}
+                value={search}
+              />
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginTop: responsiveHeight(3),
+                }}
+              >
+                <View style={styles.Dateinputfield}>
+                  <Text style={styles.label}>Start Date</Text>
+                  <TextInput
+                    style={[
+                      styles.Dateinput,
+                      styles.disableInput,
+                      { fontSize: responsiveFontSize(1.5) },
+                    ]}
+                    value={formatDate(startDate)}
+                    editable={false}
+                  />
+                  <TouchableOpacity
+                    style={[styles.smalliconContainer]}
+                    onPress={showStartDatePicker}
+                  >
+                    <FontAwesome5
+                      name="calendar-alt"
+                      size={17}
+                      color="black"
+                      style={{ marginTop: responsiveHeight(0.7) }}
+                    />
+                  </TouchableOpacity>
                 </View>
 
-                <FlatList
-                  data={filteredPaymentData}
-                  keyExtractor={(item) => item.id}
-                  showsVerticalScrollIndicator={false}
-                  style={{
-                    marginBottom: responsiveHeight(67),
-                  }}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      style={styles.paymentHistory}
-                      onPress={() =>
-                        navigation.navigate("viewPayment", {
-                          id: item.id,
-                          cutomeId: id,
-                        })
-                      }
-                    >
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <View style={{ width: responsiveWidth(73) }}>
-                          <View
-                            style={{ marginHorizontal: responsiveWidth(2) }}
-                          >
-                            <View
+                <View style={styles.Dateinputfield}>
+                  <Text style={styles.label}>End Date</Text>
+                  <TextInput
+                    style={[
+                      styles.Dateinput,
+                      styles.disableInput,
+                      { fontSize: responsiveFontSize(1.5) },
+                    ]}
+                    value={formatDate(endDate)}
+                    editable={false}
+                  />
+                  <TouchableOpacity
+                    style={styles.smalliconContainer}
+                    onPress={showEndDatePicker}
+                  >
+                    <FontAwesome5
+                      name="calendar-alt"
+                      size={17}
+                      color="black"
+                      style={{ marginTop: responsiveHeight(0.7) }}
+                    />
+                  </TouchableOpacity>
+                </View>
+                <View style={{ width: responsiveWidth(7) }}>
+                  <TouchableOpacity style={styles.searchicon} onPress={filterData}>
+                    <Feather name="search" size={24} color={primaryColor} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+            {filteredPaymentData != "" ? (
+              <>
+                <View style={styles.paymentsContainer}>
+                  <View style={styles.paymentBox}>
+                    <View style={styles.totalpayment}>
+                      <View style={{ marginHorizontal: responsiveWidth(2) }}>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            paddingBottom: responsiveHeight(1),
+                          }}
+                        >
+                          <View>
+                            <Text
                               style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                paddingBottom: responsiveHeight(1),
+                                fontSize: responsiveFontSize(1.8),
+                                fontFamily: "Regular",
                               }}
                             >
-                              <View>
-                                <View style={styles.paymentOption}>
-                                  <Text style={styles.paymentOptionText}>
-                                    {item.payment_mode}
-                                  </Text>
-                                </View>
-                              </View>
-                              <View>
-                                <Text
-                                  style={{
-                                    fontSize: responsiveFontSize(1.8),
-                                    fontFamily: "Medium",
-                                  }}
-                                >
-                                  <FontAwesome5
-                                    name="rupee-sign"
-                                    size={12}
-                                    color={"black"}
-                                  />{" "}
-                                  {parseFloat(item.amount).toFixed(2)}
-                                </Text>
-                              </View>
-                            </View>
-                            <View
+                              Total Paid :
+                            </Text>
+                          </View>
+                          <View>
+                            <Text
                               style={{
-                                paddingBottom: responsiveHeight(1),
-                                borderBottomColor: "#0000001A",
-                                paddingTop: responsiveHeight(1),
-                                borderBottomWidth: 1,
+                                fontSize: responsiveFontSize(1.8),
+                                fontFamily: "Regular",
+                                color: primaryColor,
                               }}
                             >
-                              <Text
-                                style={{
-                                  fontSize: responsiveFontSize(1.6),
-                                  fontFamily: "Regular",
-                                  color: secondaryColor,
-                                }}
-                              >
-                                Remark :{" "}
-                                {truncateString(item.remark, 8) ||
-                                  "No remark avialable"}
-                              </Text>
-                            </View>
+                              {totalUserAmount.toFixed(2)}
+                            </Text>
+                          </View>
+                        </View>
+                        <View
+                          style={{
+                            flex: 0,
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            paddingBottom: responsiveHeight(1),
+                            borderBottomColor: "#0000001A",
+                            paddingBottom: responsiveHeight(1),
+                            borderBottomWidth: 1,
+                          }}
+                        >
+                          <View>
+                            <Text
+                              style={{
+                                fontSize: responsiveFontSize(1.8),
+                                fontFamily: "Regular",
+                              }}
+                            >
+                              Total Due :
+                            </Text>
+                          </View>
+                          <View>
+                            <Text
+                              style={{
+                                fontSize: responsiveFontSize(1.8),
+                                fontFamily: "Regular",
+                                color: dangerColor,
+                              }}
+                            >
+                              {parseFloat(customerTotalDue).toFixed(2)}
+                            </Text>
+                          </View>
+                        </View>
 
-                            <View
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            paddingTop: responsiveHeight(1.5),
+                          }}
+                        >
+                          <View>
+                            <Text
                               style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                paddingTop: responsiveHeight(1),
+                                fontSize: responsiveFontSize(1.8),
+                                fontFamily: "Medium",
+                                fontWeight: "bold",
                               }}
                             >
-                              <View
-                                style={{
-                                  flexDirection: "row",
-                                  justifyContent: "flex-start",
-                                  alignItems: "center",
-                                  marginRight: responsiveWidth(3),
-                                }}
-                              >
-                                <Ionicons
-                                  name="time-outline"
-                                  size={11}
-                                  color={secondaryColor}
-                                  style={{
-                                    marginTop: responsiveHeight(0.1),
-                                    marginRight: responsiveWidth(0.5),
-                                  }}
-                                />
-                                <Text
-                                  style={{
-                                    fontSize: responsiveFontSize(1.4),
-                                    fontFamily: "Medium",
-                                    color: secondaryColor,
-                                  }}
-                                >
-                                  {formatDate(item.payment_date)}
-                                </Text>
-                              </View>
-                              <View>
-                                <Text
-                                  style={{
-                                    fontSize: responsiveFontSize(1.4),
-                                    fontFamily: "Medium",
-                                    color: secondaryColor,
-                                  }}
-                                >
-                                  Round:{" "}
-                                  <FontAwesome5
-                                    name="rupee-sign"
-                                    size={9}
-                                    color={secondaryColor}
-                                  />{" "}
-                                  {parseFloat(item.rounded).toFixed(2)}
-                                </Text>
-                              </View>
-                            </View>
+                              Net Balance :
+                            </Text>
+                          </View>
+                          <View>
+                            <Text
+                              style={{
+                                fontSize: responsiveFontSize(1.8),
+                                fontFamily: "Regular",
+                                color:
+                                  totalUserAmount - customerTotalDue >= 0
+                                    ? primaryColor
+                                    : dangerColor,
+                              }}
+                            >
+                              {parseFloat(
+                                totalUserAmount - customerTotalDue
+                              ).toFixed(2)}
+                            </Text>
                           </View>
                         </View>
                       </View>
-                    </TouchableOpacity>
-                  )}
-                  refreshControl={
-                    <RefreshControl
-                      refreshing={refreshing}
-                      onRefresh={onRefresh}
-                    />
-                  }
-                />
-              </View>
-              <DateTimePickerModal
-                isVisible={isStartDatePickerVisible}
-                mode="date"
-                date={startDate}
-                onConfirm={handleStartDateConfirm}
-                onCancel={hideStartDatePicker}
-              />
-              <DateTimePickerModal
-                isVisible={isEndDatePickerVisible}
-                mode="date"
-                date={endDate}
-                onConfirm={handleEndDateConfirm}
-                onCancel={hideEndDatePicker}
-              />
-            </View>
-          </>
-        ) : (
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              height: responsiveHeight(80),
-            }}
-          >
-            <Text
-              style={{
-                fontSize: responsiveFontSize(3),
-                opacity: 0.4,
-                fontFamily: "Regular",
-              }}
-            >
-              No Payment Found
-            </Text>
-            <TouchableOpacity
-              style={{ width: responsiveWidth(70) }}
-              onPress={() =>
-                navigation.navigate("addPayment", { customId: id })
-              }
-            >
-              <Text
-                style={[
-                  {
-                    textAlign: "center",
-                    marginTop: responsiveHeight(3),
-                    fontSize: responsiveFontSize(2),
-                    borderRadius: 10,
-                    padding: responsiveHeight(1),
-                    color: whiteColor,
-                    fontFamily: "Regular",
-                    backgroundColor: primaryColor,
-                  },
-                ]}
-              >
-                Add Payment
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
+                    </View>
 
+                    <FlatList
+                      data={filteredPaymentData}
+                      keyExtractor={(item) => item.id}
+                      showsVerticalScrollIndicator={false}
+                      style={{
+                        marginBottom: responsiveHeight(67),
+                      }}
+                      renderItem={({ item }) => (
+                        <TouchableOpacity
+                          style={styles.paymentHistory}
+                          onPress={() =>
+                            navigation.navigate("viewPayment", {
+                              id: item.id,
+                              cutomeId: id,
+                            })
+                          }
+                        >
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <View style={{ width: responsiveWidth(73) }}>
+                              <View
+                                style={{ marginHorizontal: responsiveWidth(2) }}
+                              >
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    paddingBottom: responsiveHeight(1),
+                                  }}
+                                >
+                                  <View>
+                                    <View style={styles.paymentOption}>
+                                      <Text style={styles.paymentOptionText}>
+                                        {item.payment_mode}
+                                      </Text>
+                                    </View>
+                                  </View>
+                                  <View>
+                                    <Text
+                                      style={{
+                                        fontSize: responsiveFontSize(1.8),
+                                        fontFamily: "Medium",
+                                      }}
+                                    >
+                                      <FontAwesome5
+                                        name="rupee-sign"
+                                        size={12}
+                                        color={"black"}
+                                      />{" "}
+                                      {parseFloat(item.amount).toFixed(2)}
+                                    </Text>
+                                  </View>
+                                </View>
+                                <View
+                                  style={{
+                                    paddingBottom: responsiveHeight(1),
+                                    borderBottomColor: "#0000001A",
+                                    paddingTop: responsiveHeight(1),
+                                    borderBottomWidth: 1,
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      fontSize: responsiveFontSize(1.6),
+                                      fontFamily: "Regular",
+                                      color: secondaryColor,
+                                    }}
+                                  >
+                                    Remark :{" "}
+                                    {truncateString(item.remark, 8) ||
+                                      "No remark avialable"}
+                                  </Text>
+                                </View>
+
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    justifyContent: "space-between",
+                                    paddingTop: responsiveHeight(1),
+                                  }}
+                                >
+                                  <View
+                                    style={{
+                                      flexDirection: "row",
+                                      justifyContent: "flex-start",
+                                      alignItems: "center",
+                                      marginRight: responsiveWidth(3),
+                                    }}
+                                  >
+                                    <Ionicons
+                                      name="time-outline"
+                                      size={11}
+                                      color={secondaryColor}
+                                      style={{
+                                        marginTop: responsiveHeight(0.1),
+                                        marginRight: responsiveWidth(0.5),
+                                      }}
+                                    />
+                                    <Text
+                                      style={{
+                                        fontSize: responsiveFontSize(1.4),
+                                        fontFamily: "Medium",
+                                        color: secondaryColor,
+                                      }}
+                                    >
+                                      {formatDate(item.payment_date)}
+                                    </Text>
+                                  </View>
+                                  <View>
+                                    <Text
+                                      style={{
+                                        fontSize: responsiveFontSize(1.4),
+                                        fontFamily: "Medium",
+                                        color: secondaryColor,
+                                      }}
+                                    >
+                                      Round:{" "}
+                                      <FontAwesome5
+                                        name="rupee-sign"
+                                        size={9}
+                                        color={secondaryColor}
+                                      />{" "}
+                                      {parseFloat(item.rounded).toFixed(2)}
+                                    </Text>
+                                  </View>
+                                </View>
+                              </View>
+                            </View>
+                          </View>
+                        </TouchableOpacity>
+                      )}
+                      refreshControl={
+                        <RefreshControl
+                          refreshing={refreshing}
+                          onRefresh={onRefresh}
+                        />
+                      }
+                    />
+                  </View>
+                  <DateTimePickerModal
+                    isVisible={isStartDatePickerVisible}
+                    mode="date"
+                    date={startDate}
+                    onConfirm={handleStartDateConfirm}
+                    onCancel={hideStartDatePicker}
+                  />
+                  <DateTimePickerModal
+                    isVisible={isEndDatePickerVisible}
+                    mode="date"
+                    date={endDate}
+                    onConfirm={handleEndDateConfirm}
+                    onCancel={hideEndDatePicker}
+                  />
+                </View>
+              </>
+            ) : (
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: responsiveHeight(80),
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: responsiveFontSize(3),
+                    opacity: 0.4,
+                    fontFamily: "Regular",
+                  }}
+                >
+                  No Payment Found
+                </Text>
+                <TouchableOpacity
+                  style={{ width: responsiveWidth(70) }}
+                  onPress={() =>
+                    navigation.navigate("addPayment", { customId: id })
+                  }
+                >
+                  <Text
+                    style={[
+                      {
+                        textAlign: "center",
+                        marginTop: responsiveHeight(3),
+                        fontSize: responsiveFontSize(2),
+                        borderRadius: 10,
+                        padding: responsiveHeight(1),
+                        color: whiteColor,
+                        fontFamily: "Regular",
+                        backgroundColor: primaryColor,
+                      },
+                    ]}
+                  >
+                    Add Payment
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </>
+        )}
         {/* </ScrollView> */}
       </SafeAreaView>
       <Add routeName="addPayment" params={{ customId: id }} />

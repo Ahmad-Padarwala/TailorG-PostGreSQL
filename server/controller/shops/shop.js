@@ -13,12 +13,25 @@ const getShopData = (req, res) => {
   });
 };
 
-const editshopData = (req, res) => {
-  const { first_name, last_name, shop_name, contact_number, email, image } = req.body;
-  const id = req.params.id;
+const getPathesData = (req, res) => {
+  const q = "SELECT * FROM public.pathes";
+  client.query(q, (err, data) => { // changed 'data' to 'result' for clarity
+    if (err) {
+      console.error("Error fetching data from database:");
+      res.status(500).json({ msg: "Data Error" });
+    } else {
+      res.status(200).json(data);
+    }
+  });
+};
 
-  console.log("Updating shop data for ID:", id); // Log updating data
-  console.log("Received data:", { first_name, last_name, shop_name, contact_number, email, image });
+
+const editshopData = (req, res) => {
+  const id = req.params.id;
+  const { first_name, last_name, shop_name, contact_number, email, image } = req.body;
+
+  console.log(id);
+  // console.log("Received data:", { first_name, last_name, shop_name, contact_number, email, image });
 
   const sql = `UPDATE public.shops SET first_name=$1, last_name=$2, shop_name=$3, contact_number=$4, email=$5, profile_img=$6, updated_by=$7, updated_date=NOW() WHERE id=$8`;
   const data = [first_name, last_name, shop_name, contact_number, email, image, id, id];
@@ -34,4 +47,4 @@ const editshopData = (req, res) => {
 };
 
 
-module.exports = { getShopData, editshopData };
+module.exports = { getShopData, editshopData, getPathesData };

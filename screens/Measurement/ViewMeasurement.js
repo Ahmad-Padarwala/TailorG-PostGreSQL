@@ -43,7 +43,17 @@ const ViewMeasurement = ({ route }) => {
       console.error(error + "error in getting view measurement data");
     }
   };
-
+  const [pathData, setPathData] = useState([]);
+  const getPathData = async () => {
+    await axios
+      .get(`${PORT}/getpathesdata`)
+      .then((res) => {
+        setPathData(res.data[0]);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
   //delete data section start
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -85,6 +95,7 @@ const ViewMeasurement = ({ route }) => {
   useFocusEffect(
     React.useCallback(() => {
       getViewMeasurementData();
+      getPathData();
     }, [])
   );
   const truncateString = (text, len) => {
@@ -177,7 +188,7 @@ const ViewMeasurement = ({ route }) => {
                     ) : (
                       <Image
                         source={{
-                          uri: `${PORT}/uploads/dresses/${group.dress_image}`,
+                          uri: `${pathData.image_path}/uploads/dresses/${group.dress_image}`,
                         }}
                         style={{
                           width: responsiveWidth(8),

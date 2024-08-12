@@ -68,6 +68,17 @@ const ViewDress = ({ route }) => {
       );
     }
   };
+  const [pathData, setPathData] = useState([]);
+  const getPathData = async () => {
+    await axios
+      .get(`${PORT}/getpathesdata`)
+      .then((res) => {
+        setPathData(res.data[0]);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
   // get Dress body parts
   const getDressParts = async (id, uniqueNumber) => {
     try {
@@ -125,6 +136,7 @@ const ViewDress = ({ route }) => {
     React.useCallback(() => {
       getDressData(dressId);
       getBodyPartsName();
+      getPathData()
     }, [])
   );
 
@@ -190,7 +202,7 @@ const ViewDress = ({ route }) => {
                   ) : (
                     <Image
                       source={{
-                        uri: `${PORT}/uploads/dresses/${dressDetail.dress_image}`,
+                        uri: `${pathData.image_path}/uploads/dresses/${dressDetail.dress_image}`,
                       }}
                       style={{
                         width: "100%",
@@ -224,7 +236,7 @@ const ViewDress = ({ route }) => {
           <Text
             style={{
               paddingHorizontal: responsiveWidth(8),
-              marginBottom: responsiveHeight(2),
+              marginBottom: responsiveHeight(0),
               fontFamily: "Medium",
               fontSize: responsiveFontSize(2),
               backgroundColor: whiteColor,

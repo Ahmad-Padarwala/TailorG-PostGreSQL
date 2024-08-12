@@ -16,6 +16,7 @@ import {
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 import { useFonts } from "expo-font/build/FontHooks";
+import Toast from 'react-native-toast-message';
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../../middleware/AuthReducer";
 import axios from "axios";
@@ -81,7 +82,7 @@ const AddDressBodyParts = ({ route }) => {
   useFocusEffect(
     React.useCallback(() => {
       getbodyparts();
-      if(isEdit == true){
+      if (isEdit == true) {
         getCurrDressParts(dress_unique_number);
       }
     }, [])
@@ -114,7 +115,7 @@ const AddDressBodyParts = ({ route }) => {
       selectedParts,
     };
     if (isEdit) {
-      
+
       try {
         const response = await axios.patch(
           `${PORT}/editdressesbodyparts/${userToken}/${dressId}`,
@@ -125,10 +126,17 @@ const AddDressBodyParts = ({ route }) => {
         } else {
           console.log("Error", "Upload failed");
         }
-      } catch (error) {
-        console.log(error);
+      } catch (err) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: "This Dress and its parts is used in other places. Please delete it from there first.",
+          visibilityTime: 5000, // Display the toast for 5 seconds
+          autoHide: true,
+          position: "bottom"
+        });
       }
-    }else{
+    } else {
 
       try {
         const response = await axios.post(

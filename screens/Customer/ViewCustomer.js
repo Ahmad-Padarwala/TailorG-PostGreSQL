@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Modal,
   Dimensions,
+  TextInput,
   ActivityIndicator,
 } from "react-native";
 import {
@@ -59,6 +60,7 @@ const ViewCustomer = ({ route }) => {
   const [deleteButtonDisable, setDeleteButtonDisable] = useState(true);
   const [isCheckboxSelected, setIsCheckboxSelected] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [confirmationName, setConfirmationName] = useState("");
   const deleteCustomer = async () => {
     try {
       await axios.delete(`${PORT}/deleteCustomerData/${customerData.id}`);
@@ -70,9 +72,14 @@ const ViewCustomer = ({ route }) => {
   useEffect(() => {
     getCustomerDataWithId();
   }, []);
+  // useEffect(() => {
+  //   setDeleteButtonDisable(!isCheckboxSelected);
+  // }, [isCheckboxSelected]);
   useEffect(() => {
-    setDeleteButtonDisable(!isCheckboxSelected);
-  }, [isCheckboxSelected]);
+    setDeleteButtonDisable(
+      !(isCheckboxSelected && confirmationName === customerData?.customer_name)
+    );
+  }, [isCheckboxSelected, confirmationName, customerData]);
 
   if (!customerData) {
     return (
@@ -302,7 +309,7 @@ const ViewCustomer = ({ route }) => {
                   style={[styles.onlybtn, { backgroundColor: dangerColor }]}
                 >
                   <Text style={styles.onlybtntext}>
-                    <Ionicons name="trash" size={14}></Ionicons> Delete Customer
+                    <Ionicons name="trash" size={14}></Ionicons> Delete
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -367,6 +374,22 @@ const ViewCustomer = ({ route }) => {
                   >
                     Yes, Delete
                   </Text>
+                </View>
+                <View style={{ marginTop: responsiveHeight(1), width: "100%" }}>
+                  <TextInput
+                    style={{
+                      borderWidth: 1,
+                      borderColor: lightGray,
+                      borderRadius: 5,
+                      paddingVertical: responsiveHeight(1.5),
+                      paddingHorizontal: responsiveWidth(5),
+                      fontFamily: "Regular",
+                      fontSize: responsiveFontSize(2),
+                    }}
+                    placeholder={`Type ${customerData.customer_name} to confirm`}
+                    value={confirmationName}
+                    onChangeText={setConfirmationName}
+                  />
                 </View>
                 <View
                   style={{
@@ -446,7 +469,7 @@ const ViewCustomer = ({ route }) => {
             </View>
           </Modal>
         </SafeAreaView>
-      </ScrollView>
+      </ScrollView >
     </>
   );
 };

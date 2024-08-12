@@ -49,6 +49,17 @@ const AddMeasurement = ({ route }) => {
       console.error(error + "error in getting customer data in customer page");
     }
   };
+  const [pathData, setPathData] = useState([]);
+  const getPathData = async () => {
+    await axios
+      .get(`${PORT}/getpathesdata`)
+      .then((res) => {
+        setPathData(res.data[0]);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
   //getting dress data
   const [measureBodyData, setMeasureBodyData] = useState([]);
   const getMeasureBodyData = async (id) => {
@@ -153,6 +164,7 @@ const AddMeasurement = ({ route }) => {
   useFocusEffect(
     React.useCallback(() => {
       getDressData();
+      getPathData();
     }, [])
   );
 
@@ -222,7 +234,7 @@ const AddMeasurement = ({ route }) => {
                         ) : (
                           <Image
                             source={{
-                              uri: `${PORT}/uploads/dresses/${selectedDressType.dress_image}`,
+                              uri: `${pathData.image_path}/uploads/dresses/${selectedDressType.dress_image}`,
                             }}
                             style={{
                               width: responsiveWidth(8),
@@ -307,7 +319,7 @@ const AddMeasurement = ({ route }) => {
                               ) : (
                                 <Image
                                   source={{
-                                    uri: `${PORT}/uploads/dresses/${item.dress_image}`,
+                                    uri: `${pathData.image_path}/uploads/dresses/${item.dress_image}`,
                                   }}
                                   style={{
                                     width: responsiveWidth(8),

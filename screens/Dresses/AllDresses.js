@@ -40,19 +40,36 @@ const AllDresses = () => {
 
   const { userToken } = useContext(AuthContext);
   const [Dresses, setDresses] = useState([]);
-
+  const [loading, setLoading] = useState(true);
+  const [pathData, setPathData] = useState([]);
+  const getPathData = async () => {
+    setLoading(true)
+    await axios
+      .get(`${PORT}/getpathesdata`)
+      .then((res) => {
+        setPathData(res.data[0]);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
+  };
   // get body parts
   const getDresses = async () => {
+    setLoading(false);
     try {
       const response = await axios.get(`${PORT}/getalldresses/${userToken}`, {
         params: { gender: Ordertype },
       });
       const bodypartsRows = response.data.rows;
       setDresses(bodypartsRows);
+      setLoading(false);
     } catch (error) {
       console.error(
         error + "error in getting bodyparts data in bodyparts page"
       );
+      setLoading(false);
     }
   };
 
@@ -61,7 +78,11 @@ const AllDresses = () => {
       getDresses();
     }, [Ordertype])
   );
-
+  useFocusEffect(
+    React.useCallback(() => {
+      getPathData();
+    }, [])
+  );
   //onrefresh
   const onRefresh = async () => {
     setRefreshing(true);
@@ -95,135 +116,155 @@ const AllDresses = () => {
   return (
     <>
       <SafeAreaView style={{ backgroundColor: whiteColor, flex: 1 }}>
-        <View style={[styles.flatlistheader]}>
-          <View style={[styles.headername]}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Ionicons
-                name="arrow-back-outline"
-                size={20}
-                color="black"
-                style={{
-                  alignSelf: "center",
-                  marginRight: responsiveWidth(2),
-                }}
-              />
-            </TouchableOpacity>
-            <View>
-              <Text style={styles.headernametext}>Dresses</Text>
-            </View>
-            <View
+        {loading ? (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <ActivityIndicator
+              size={70}
+              color={primaryColor}
               style={{
-                width: responsiveWidth(78),
-                height: responsiveHeight(5),
+                flex: 1,
+                justifyContent: "center",
                 flexDirection: "row",
-                alignItems: "center",
+                justifyContent: "space-around",
+                padding: 10,
               }}
-            >
-              <SelectDropdown
-                data={category}
-                onSelect={(selectedItem) => {
-                  setOrdertype(selectedItem);
-                }}
-                buttonTextAfterSelection={(selectedItem, index) => {
-                  return selectedItem;
-                }}
-                rowTextForSelection={(item, index) => {
-                  return item;
-                }}
-                defaultButtonText={"All"}
-                buttonStyle={{
-                  backgroundColor: whiteColor,
-                  width: "41%",
-                  left: 60,
-                }}
-                buttonTextStyle={{
-                  fontSize: 14,
-                  color: primaryColor,
-                  fontFamily: "Medium",
-                  textAlign: "center",
-                }}
-                selectedRowTextStyle={{
-                  fontSize: 14,
-                  fontFamily: "Medium",
-                  color: primaryColor,
-                  opacity: 1,
-                }}
-                dropdownStyle={{ marginTop: -10, borderRadius: 5 }}
-                rowTextStyle={{ fontSize: 14, fontFamily: "Regular" }}
-                renderDropdownIcon={() => {
-                  return (
-                    <Ionicons
-                      style={{ marginLeft: responsiveWidth(-6) }}
-                      name="chevron-down-outline"
-                      size={16}
-                    ></Ionicons>
-                  );
-                }}
-              />
-            </View>
-          </View>
-          {/* when no data found start */}
-        </View>
-
-        {/* when data found start */}
-
-        <FlatList
-          data={Dresses}
-          keyExtractor={(item) => item.id}
-          numColumns={3}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={renderEmptyComponent}
-          columnWrapperStyle={styles.dressContainermain}
-          style={{
-            marginVertical: responsiveHeight(1),
-          }}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate("viewDress", { id: item.id });
-              }}
-              style={styles.dressContainer}
-            >
-              <View style={styles.imageContainer}>
-                {
-                  item.dress_image == "NoImage.jpg" ? (
-                    <Image
-                      source={require('../../assets/images/NoImage.jpg')}
-                      style={{
-                        width: "100%",
-                        height: responsiveHeight(8),
-                        borderRadius: 3,
-                      }}
-                    />
-                  ) : (
-                    <Image
-                      source={{
-                        uri: `${PORT}/uploads/dresses/${item.dress_image}`,
-                      }}
-                      style={{
-                        width: "100%",
-                        height: responsiveHeight(8),
-                        borderRadius: 3,
-                      }}
-                    />
-                  )
-                }
-              </View>
-              <Text style={{ textAlign: "center", fontFamily: "Regular" }}>
-                {item.dress_name}
-              </Text>
-            </TouchableOpacity>
-          )}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
             />
-          }
-        />
+          </View>
+        ) : (
+          <>
+            <View style={[styles.flatlistheader]}>
+              <View style={[styles.headername]}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <Ionicons
+                    name="arrow-back-outline"
+                    size={20}
+                    color="black"
+                    style={{
+                      alignSelf: "center",
+                      marginRight: responsiveWidth(2)
+                    }}
+                  />
+                </TouchableOpacity>
+                <View>
+                  <Text style={styles.headernametext}>Dresses</Text>
+                </View>
+                <View
+                  style={{
+                    width: responsiveWidth(78),
+                    height: responsiveHeight(5),
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <SelectDropdown
+                    data={category}
+                    onSelect={(selectedItem) => {
+                      setOrdertype(selectedItem);
+                    }}
+                    buttonTextAfterSelection={(selectedItem, index) => {
+                      return selectedItem;
+                    }}
+                    rowTextForSelection={(item, index) => {
+                      return item;
+                    }}
+                    defaultButtonText={"All"}
+                    buttonStyle={{
+                      backgroundColor: whiteColor,
+                      width: "41%",
+                      left: 60,
+                    }}
+                    buttonTextStyle={{
+                      fontSize: 14,
+                      color: primaryColor,
+                      fontFamily: "Medium",
+                      textAlign: "center",
+                    }}
+                    selectedRowTextStyle={{
+                      fontSize: 14,
+                      fontFamily: "Medium",
+                      color: primaryColor,
+                      opacity: 1,
+                    }}
+                    dropdownStyle={{ marginTop: -10, borderRadius: 5 }}
+                    rowTextStyle={{ fontSize: 14, fontFamily: "Regular" }}
+                    renderDropdownIcon={() => {
+                      return (
+                        <Ionicons
+                          style={{ marginLeft: responsiveWidth(-6) }}
+                          name="chevron-down-outline"
+                          size={16}
+                        ></Ionicons>
+                      );
+                    }}
+                  />
+                </View>
+              </View>
+              {/* when no data found start */}
+            </View>
 
-        {/* when data found end */}
-        <Add routeName={"addShopDress"} />
+            {/* when data found start */}
+
+            <FlatList
+              data={Dresses}
+              keyExtractor={(item) => item.id}
+              numColumns={3}
+              showsVerticalScrollIndicator={false}
+              ListEmptyComponent={renderEmptyComponent}
+              columnWrapperStyle={styles.dressContainermain}
+              style={{
+                marginVertical: responsiveHeight(1),
+              }}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("viewDress", { id: item.id });
+                  }}
+                  style={styles.dressContainer}
+                >
+                  <View style={styles.imageContainer}>
+                    {
+                      item.dress_image == "NoImage.jpg" ? (
+                        <Image
+                          source={require('../../assets/images/NoImage.jpg')}
+                          style={{
+                            width: "100%",
+                            height: responsiveHeight(8),
+                            borderRadius: 3,
+                          }}
+                        />
+                      ) : (
+                        <Image
+                          source={{
+                            uri: `${pathData.image_path}/uploads/dresses/${item.dress_image}`,
+                          }}
+                          style={{
+                            width: "100%",
+                            height: responsiveHeight(8),
+                            borderRadius: 3,
+                          }}
+                        />
+                      )
+                    }
+                  </View>
+                  <Text style={{ textAlign: "center", fontFamily: "Regular" }}>
+                    {item.dress_name}
+                  </Text>
+                </TouchableOpacity>
+              )}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                />
+              }
+            />
+
+            {/* when data found end */}
+            <Add routeName={"addShopDress"} />
+          </>
+        )}
       </SafeAreaView>
     </>
   );

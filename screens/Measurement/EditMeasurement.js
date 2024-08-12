@@ -37,7 +37,17 @@ const EditMeasurement = ({ route }) => {
     dresses_id: null,
     mea_value: [],
   });
-
+  const [pathData, setPathData] = useState([]);
+  const getPathData = async () => {
+    await axios
+      .get(`${PORT}/getpathesdata`)
+      .then((res) => {
+        setPathData(res.data[0]);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
   const getViewMeasurementData = async () => {
     try {
       const response = await axios.get(`${PORT}/geteditwmeasurementdata/${id}`);
@@ -72,6 +82,7 @@ const EditMeasurement = ({ route }) => {
 
   useEffect(() => {
     getViewMeasurementData();
+    getPathData()
   }, []);
 
   const handleChange = (name, value) => {
@@ -101,14 +112,6 @@ const EditMeasurement = ({ route }) => {
       console.log(error);
     }
   };
-  const truncateString = (text, len) => {
-    if (text.length > len) {
-      return text.substring(0, len) + "...";
-    }
-    return text;
-  };
-
-  console.log(editMeasurement)
 
   return (
     <SafeAreaView style={{ backgroundColor: whiteColor, flex: 1 }}>
@@ -172,7 +175,7 @@ const EditMeasurement = ({ route }) => {
                     ) : (
                       <Image
                         source={{
-                          uri: `${PORT}/uploads/dresses/${editMeasurement.dimage}`,
+                          uri: `${pathData.image_path}/uploads/dresses/${editMeasurement.dimage}`,
                         }}
                         style={{
                           width: responsiveWidth(8),

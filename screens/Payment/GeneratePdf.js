@@ -136,6 +136,17 @@ const GeneratePdf = () => {
       setLoading(false);
     }
   };
+  const [pathData, setPathData] = useState([]);
+  const getPathData = async () => {
+    await axios
+      .get(`${PORT}/getpathesdata`)
+      .then((res) => {
+        setPathData(res.data[0]);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
   //get total due of customer
   const customerTotalDue = totalDueData.reduce((total, item) => {
     let multiplication = parseInt(item.price) * parseInt(item.qty);
@@ -286,7 +297,7 @@ const GeneratePdf = () => {
   ${bankDetail.length > 0 ? `
     <div style="display: flex; align-items: center; border-radius: 6px; background-color: white; box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; margin-bottom: 2px;">
       <div style="padding:20px;">
-        <img src="${PORT}/uploads/bank/${bankDetail[0].image}"  width="140px" height="140px" />
+        <img src="${pathData.image_path}/uploads/bank/${bankDetail[0].image}"  width="140px" height="140px" />
       </div>
       <div>
         <p style="margin: 5px 0px;"><strong>${shopData.last_name} ${shopData.first_name}</strong></p>
@@ -338,6 +349,7 @@ const GeneratePdf = () => {
       getDataForTotalDue();
       getBankDetail();
       getShopData();
+      getPathData();
     }, [])
   );
   useEffect(() => {
@@ -401,10 +413,10 @@ const GeneratePdf = () => {
               }}
             >
               <Image
-                source={require("../../assets/icon.png")}
+                source={require("../../assets/favicon.png")}
                 style={{
                   width: responsiveWidth(6),
-                  height: responsiveHeight(4),
+                  height: responsiveHeight(4.2),
                   marginHorizontal: "auto",
                 }}
               />
@@ -705,7 +717,7 @@ const GeneratePdf = () => {
                     }}
                   >
                     <Image
-                      source={{ uri: `${PORT}/uploads/bank/${bankDetail[0].image}` }}
+                      source={{ uri: `${pathData.image_path}/uploads/bank/${bankDetail[0].image}` }}
                       style={{ width: "100%", height: responsiveHeight(12) }}
                     />
                   </View>

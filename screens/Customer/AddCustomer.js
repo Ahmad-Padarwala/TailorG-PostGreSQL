@@ -58,21 +58,10 @@ const AddCustomer = () => {
       [name]: value,
     }));
   };
-  // Validation function for email
-  const validateEmail = (email) => {
-    if (!email.trim()) {
-      return true;
-    }
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email);
-  };
+
   const saveAddData = () => {
     if (addCustomer.customer_name == "") {
       alert("Please Insert Customer Name");
-      return;
-    }
-    if (!validateEmail(addCustomer.email)) {
-      alert("Please enter a valid Email Address");
       return;
     }
     if (addCustomer.mobile_number == "") {
@@ -81,10 +70,6 @@ const AddCustomer = () => {
     }
     if (addCustomer.mobile_number.length < 10) {
       alert("Please atleast enter 10 digit");
-      return;
-    }
-    if (addCustomer.address == "") {
-      alert("Please Insert Customer Address");
       return;
     }
     axios
@@ -156,7 +141,7 @@ const AddCustomer = () => {
             </View>
 
             <View style={styles.inputfield}>
-              <Text style={styles.label}>Email <Text style={{ color: dangerColor }}>*</Text></Text>
+              <Text style={styles.label}>Email</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Enter Your Email"
@@ -220,7 +205,7 @@ const AddCustomer = () => {
             </View>
 
             <View style={styles.inputfield}>
-              <Text style={styles.label}>Address <Text style={{ color: dangerColor }}>*</Text></Text>
+              <Text style={styles.label}>Address</Text>
               <TextInput
                 placeholder="Address"
                 style={[styles.input, { borderRadius: responsiveWidth(2) }]}
@@ -245,7 +230,7 @@ const AddCustomer = () => {
 
             <View style={{ marginTop: 20 }}>
               <TouchableOpacity style={styles.onlybtn} onPress={saveAddData}>
-                <Text style={styles.onlybtntext}>Add Customer</Text>
+                <Text style={styles.onlybtntext}>Add</Text>
               </TouchableOpacity>
             </View>
           </View>
