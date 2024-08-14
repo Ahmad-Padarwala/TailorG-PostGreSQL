@@ -582,7 +582,7 @@ const AddOrder = ({ route }) => {
                   <Text style={{ color: dangerColor }}>*</Text>
                 </Text>
 
-                <TouchableOpacity style={{ flex: 0, flexDirection: "row" }}>
+                <TouchableOpacity onPress={() => navigation.navigate("addMeasurement", id)} style={{ flex: 0, flexDirection: "row" }}>
                   <View>
                     <Ionicons
                       name="add"

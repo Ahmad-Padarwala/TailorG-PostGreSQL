@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   RefreshControl,
   TouchableOpacity,
+  ActivityIndicator,
   FlatList,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -57,7 +58,7 @@ const AllDresses = () => {
   };
   // get body parts
   const getDresses = async () => {
-    setLoading(false);
+    setLoading(true);
     try {
       const response = await axios.get(`${PORT}/getalldresses/${userToken}`, {
         params: { gender: Ordertype },

@@ -166,7 +166,7 @@ const ViewCustomer = ({ route }) => {
                     {getFirstCharacter(customerData.customer_name)}
                   </Text>
                 </View>
-                <Text style={[styles.titletext, { textAlign: "center" }]}>
+                <Text style={[styles.titletext, { textAlign: "center", paddingHorizontal: responsiveWidth(1) }]}>
                   {customerData.customer_name}
                 </Text>
                 <TouchableOpacity

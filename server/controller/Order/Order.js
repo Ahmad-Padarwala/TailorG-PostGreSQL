@@ -168,7 +168,7 @@ JOIN
 ON 
   co.dress_id = d.id
 WHERE 
-  co.shop_id=${shopid} and co.urgent='yes'
+  co.shop_id=${shopid} and co.urgent='yes' and co.status='active' or co.status='progress'
 `;
 
   client.query(q, (err, data) => {

@@ -6,10 +6,12 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
   RefreshControl,
   Dimensions
 } from "react-native";
 import {
+  primaryColor,
   secondaryColor,
   styles,
   whiteColor,

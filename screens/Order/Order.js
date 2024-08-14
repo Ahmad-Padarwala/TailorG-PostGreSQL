@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   RefreshControl,
+  ActivityIndicator,
   Dimensions
 } from "react-native";
 import {
@@ -31,8 +32,8 @@ const PORT = process.env.EXPO_PUBLIC_API_URL;
 const Order = () => {
   const navigation = useNavigation();
   const { userToken } = useContext(AuthContext);
-  const [refreshing, setRefreshing] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [Ordertype, setOrdertype] = useState("All");
   const category = ["All", "Active", "Progress", "Ready", "Delivered"];
 
