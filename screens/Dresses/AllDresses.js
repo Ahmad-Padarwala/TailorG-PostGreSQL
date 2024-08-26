@@ -170,7 +170,7 @@ const AllDresses = () => {
                     rowTextForSelection={(item, index) => {
                       return item;
                     }}
-                    defaultButtonText={"All"}
+                    defaultButtonText={Ordertype}
                     buttonStyle={{
                       backgroundColor: whiteColor,
                       width: "41%",
@@ -238,7 +238,7 @@ const AllDresses = () => {
                       ) : (
                         <Image
                           source={{
-                            uri: `${pathData.image_path}/uploads/dresses/${item.dress_image}`,
+                            uri: `${PORT}/uploads/dresses/${item.dress_image}`,
                           }}
                           style={{
                             width: "100%",

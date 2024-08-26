@@ -9,6 +9,7 @@ import {
   TextInput,
   Modal,
   RefreshControl,
+  TouchableWithoutFeedback,
 } from "react-native";
 import {
   dangerColor,
@@ -362,7 +363,7 @@ const Bodyparts = () => {
                 data={partData}
                 keyExtractor={(item) => item.id}
                 showsVerticalScrollIndicator={false}
-                style={{ marginBottom: responsiveHeight(6) }}
+                style={{ marginBottom: responsiveHeight(6),marginTop: responsiveHeight(1) }}
                 onScroll={(e) => {
                   const currentOffset = e.nativeEvent.contentOffset.y;
                   const direction =
@@ -376,10 +377,21 @@ const Bodyparts = () => {
                   >
                     <View key={index} style={styles.bodypartsbox}>
                       <View style={styles.bodypartsboxshadow}>
-                        <View>
+                        <View style={{ display: "flex", flexDirection: "row" }}>
                           <Text style={styles.bodypartsboxtext}>
                             {item.part_name}
                           </Text>
+                          <View
+                            style={[
+                              item.gender == "male"
+                                ? styles.genderMale
+                                : styles.genderFeMale
+                              , { marginLeft: responsiveWidth(5) }]}
+                          >
+                            <Text style={styles.genderDropDownMeaserText}>
+                              {item.gender}
+                            </Text>
+                          </View>
                         </View>
                         <View style={styles.rightsidebox}>
                           <View>
@@ -758,140 +770,143 @@ const Bodyparts = () => {
           presentationStyle="overFullScreen"
           onDismiss={toggleViewModalVisibility}
         >
-          <TouchableOpacity style={styles.viewWrapper} onPress={toggleViewModalVisibility}>
-            <View style={styles.modalView}>
-              <Text style={styles.modellabel}>Body Parts Name</Text>
-              <TextInput
-                style={[styles.modalinput, styles.disableInput]}
-                onChangeText={(text) => handleEditChange("part_name", text)}
-                value={editBodyPart.part_name}
-                editable={false}
-              />
-              <Text style={styles.modellabel}>Select Gender</Text>
-              <View
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                }}
-              >
-                <RadioButton
-                  value={editBodyPart.gender}
-                  status={
-                    editBodyPart.gender === "male" ? "checked" : "unchecked"
-                  }
-                  onPress={() => handleEditChange("gender", "male")}
-                  color="black"
-                  disabled
+          <TouchableOpacity style={styles.viewWrapper} activeOpacity={1}
+            onPress={toggleViewModalVisibility}>
+            <TouchableWithoutFeedback>
+              <View style={styles.modalView}>
+                <Text style={styles.modellabel}>Body Parts Name</Text>
+                <TextInput
+                  style={[styles.modalinput, styles.disableInput]}
+                  onChangeText={(text) => handleEditChange("part_name", text)}
+                  value={editBodyPart.part_name}
+                  editable={false}
                 />
-                <Text
+                <Text style={styles.modellabel}>Select Gender</Text>
+                <View
                   style={{
-                    textAlign: "center",
-                    marginTop: 6,
-                    opacity: 0.6,
-                    fontSize: responsiveFontSize(2),
-                    fontFamily: "Regular",
+                    display: "flex",
+                    flexDirection: "row",
                   }}
                 >
-                  Male
-                </Text>
-
-                <View style={{ marginLeft: 10 }}>
                   <RadioButton
                     value={editBodyPart.gender}
                     status={
-                      editBodyPart.gender === "female" ? "checked" : "unchecked"
+                      editBodyPart.gender === "male" ? "checked" : "unchecked"
                     }
-                    onPress={() => handleEditChange("gender", "female")}
+                    onPress={() => handleEditChange("gender", "male")}
                     color="black"
                     disabled
                   />
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      marginTop: 6,
+                      opacity: 0.6,
+                      fontSize: responsiveFontSize(2),
+                      fontFamily: "Regular",
+                    }}
+                  >
+                    Male
+                  </Text>
+
+                  <View style={{ marginLeft: 10 }}>
+                    <RadioButton
+                      value={editBodyPart.gender}
+                      status={
+                        editBodyPart.gender === "female" ? "checked" : "unchecked"
+                      }
+                      onPress={() => handleEditChange("gender", "female")}
+                      color="black"
+                      disabled
+                    />
+                  </View>
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      marginTop: 6,
+                      opacity: 0.6,
+                      fontSize: responsiveFontSize(2),
+                      fontFamily: "Regular",
+                    }}
+                  >
+                    Female
+                  </Text>
                 </View>
-                <Text
+                <View
                   style={{
-                    textAlign: "center",
-                    marginTop: 6,
-                    opacity: 0.6,
-                    fontSize: responsiveFontSize(2),
-                    fontFamily: "Regular",
+                    flex: 1,
+                    flexDirection: "row",
+                    marginTop: responsiveHeight(2),
+                    marginBottom: responsiveHeight(0),
                   }}
                 >
-                  Female
-                </Text>
-              </View>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  marginTop: responsiveHeight(2),
-                  marginBottom: responsiveHeight(0),
-                }}
-              >
-                <View
-                  style={[
-                    styles.modelAlertbtn,
-                    {
-                      backgroundColor: dangerColor,
-                      marginRight: responsiveWidth(3.4),
-                    },
-                  ]}
-                >
-                  <TouchableOpacity
-                    onPress={() =>
-                      deleteModalVisibility(
-                        editBodyPart.id,
-                        editBodyPart.part_name
-                      )
-                    }
-                    style={{
-                      flex: 1,
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
+                  <View
+                    style={[
+                      styles.modelAlertbtn,
+                      {
+                        backgroundColor: dangerColor,
+                        marginRight: responsiveWidth(3.4),
+                      },
+                    ]}
                   >
-                    <Text
+                    <TouchableOpacity
+                      onPress={() =>
+                        deleteModalVisibility(
+                          editBodyPart.id,
+                          editBodyPart.part_name
+                        )
+                      }
                       style={{
-                        fontSize: responsiveFontSize(2.3),
-                        color: whiteColor,
-                        fontFamily: "Regular",
+                        flex: 1,
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
                     >
-                      Delete
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                      <Text
+                        style={{
+                          fontSize: responsiveFontSize(2.3),
+                          color: whiteColor,
+                          fontFamily: "Regular",
+                        }}
+                      >
+                        Delete
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
 
-                <View
-                  style={[
-                    styles.modelAlertbtn,
-                    {
-                      marginLeft: responsiveWidth(3.4),
-                      paddingVertical: responsiveWidth(2),
-                    },
-                  ]}
-                >
-                  <TouchableOpacity
-                    onPress={() => toggleEditModalVisibility(editBodyPart.id)}
-                    style={{
-                      flex: 1,
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
+                  <View
+                    style={[
+                      styles.modelAlertbtn,
+                      {
+                        marginLeft: responsiveWidth(3.4),
+                        paddingVertical: responsiveWidth(2),
+                      },
+                    ]}
                   >
-                    <Text
+                    <TouchableOpacity
+                      onPress={() => toggleEditModalVisibility(editBodyPart.id)}
                       style={{
-                        fontSize: responsiveFontSize(2.3),
-                        color: whiteColor,
-                        fontFamily: "Regular",
+                        flex: 1,
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
                     >
-                      Edit
-                    </Text>
-                  </TouchableOpacity>
+                      <Text
+                        style={{
+                          fontSize: responsiveFontSize(2.3),
+                          color: whiteColor,
+                          fontFamily: "Regular",
+                        }}
+                      >
+                        Edit
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
-            </View>
+            </TouchableWithoutFeedback>
           </TouchableOpacity>
         </Modal>
 
@@ -1001,7 +1016,7 @@ const Bodyparts = () => {
             </View>
           </View>
         </Modal>
-      </SafeAreaView>
+      </SafeAreaView >
       {isButtonVisible && (
         <View style={styles.addmaincontainer}>
           <TouchableOpacity onPress={toggleModalVisibility}>
@@ -1016,7 +1031,8 @@ const Bodyparts = () => {
             </View>
           </TouchableOpacity>
         </View>
-      )}
+      )
+      }
     </>
   );
 };

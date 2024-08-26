@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,8 @@ import {
   Image,
 } from "react-native";
 import { styles, primaryColor } from "../../styles/style";
-import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
+import { MaterialIcons, Ionicons, FontAwesome5 } from "@expo/vector-icons";
+import { AuthContext } from "../../middleware/AuthReducer";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { RadioButton } from "react-native-paper";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -26,8 +27,44 @@ import {
 const EditOrder = ({ route }) => {
   const navigation = useNavigation();
   const orderId = route.params.orderId;
+  const { userToken } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [newEditedOrder, setNewEditedOrder] = useState({});
+  const [selectedDressType, setSelectedDressType] = useState(null);
+  const [selectedMeasType, setSelectedMeasType] = useState(null);
+  const [isMeasDropdownOpen, setIsMeasDropdownOpen] = useState(false);
+  //get measurement data
+  const [measurementData, setMeasurementData] = useState([]);
+  const getMeasurementData = async (dressid, id) => {
+    try {
+      const response = await axios.get(
+        `${PORT}/getmeasurementdatawithdressId/${dressid}/${id}/${userToken}`
+      );
+      setMeasurementData(response.data.rows);
+    } catch (error) {
+      console.error(error + "error in getting customer data in customer page");
+    }
+  };
+  //getting body parts
+  const [measureBodyData, setMeasureBodyData] = useState([]);
+  const getMeasureBodyData = async (id) => {
+    try {
+      const response = await axios.get(`${PORT}/getbodypartsdata/${id}`);
+      setMeasureBodyData(response.data.rows);
+    } catch (error) {
+      console.error(error + "error in getting customer data in customer page");
+    }
+  };
+  const handleMeasSelect = (item) => {
+    setSelectedMeasType(item);
+    setNewEditedOrder((prevData) => ({
+      ...prevData,
+      customer_measurement_id: item.id,
+    }));
+    getMeasureBodyData(item.id);
+    setIsMeasDropdownOpen(false);
+  };
+
   //get order
   const [editOrder, setEditOrder] = useState([]);
   const [pathData, setPathData] = useState([]);
@@ -47,6 +84,9 @@ const EditOrder = ({ route }) => {
         `${PORT}/getviewcustomerorder/${orderId}`
       );
       setEditOrder(response.data.rows);
+      await getMeasurementData(response.data.rows[0].dress_id, response.data.rows[0].customer_id);
+      setSelectedDressType(response.data.rows[0].dress_id);
+      setSelectedMeasType(response.data.rows[0]);
       setLoading(false);
     } catch (error) {
       console.error(error + "error in getting order data in order page");
@@ -84,8 +124,18 @@ const EditOrder = ({ route }) => {
         customer_id: editOrder[0].customer_id || "",
         dress_id: editOrder[0].dress_id || "",
       });
+
+      // Fetch measurement data for the selected measurement type
+      const selectedMeasurement = measurementData.find(
+        (item) => item.id === editOrder[0].customer_measurement_id
+      );
+      if (selectedMeasurement) {
+        setSelectedMeasType(selectedMeasurement);
+        getMeasureBodyData(selectedMeasurement.id);
+      }
     }
-  }, [editOrder]);
+  }, [editOrder, measurementData]);
+
 
   const handleChange = (field, value) => {
     setNewEditedOrder((prevOrder) => ({
@@ -141,7 +191,10 @@ const EditOrder = ({ route }) => {
     try {
       const response = await axios.put(
         `${PORT}/updatecustomerorderdata/${orderId}`,
-        newEditedOrder
+        {
+          ...newEditedOrder,
+          customer_measurement_id: selectedMeasType?.id, // Ensure this is included
+        }
       );
       if (response.status === 200) {
         navigation.goBack();
@@ -220,7 +273,7 @@ const EditOrder = ({ route }) => {
                       ) : (
                         <Image
                           source={{
-                            uri: `${pathData.image_path}/uploads/dresses/${editOrder[0].dress_image}`,
+                            uri: `${PORT}/uploads/dresses/${editOrder[0].dress_image}`,
                           }}
                           style={{
                             width: responsiveWidth(8),
@@ -444,7 +497,7 @@ const EditOrder = ({ route }) => {
                 <Text style={styles.label}>Measurement Type</Text>
               </View>
 
-              <View
+              {/* <View
                 style={[
                   styles.orderViewDetails,
                   { marginTop: responsiveHeight(0) },
@@ -453,6 +506,74 @@ const EditOrder = ({ route }) => {
                 <Text style={styles.dropdownMeaserText}>
                   {editOrder[0].name}
                 </Text>
+              </View> */}
+              <View>
+                <TouchableOpacity
+                  style={styles.dressTypeSelectbutton}
+                  onPress={() => setIsMeasDropdownOpen(!isMeasDropdownOpen)}
+                  disabled={!selectedDressType}
+                >
+                  {selectedMeasType ? (
+                    <View style={styles.selectedItemContainer}>
+                      <Text style={styles.dropdownMeaserText}>
+                        {selectedMeasType.name}
+                      </Text>
+                    </View>
+                  ) : (
+                    <Text
+                      style={{
+                        fontSize: responsiveFontSize(2),
+                        fontFamily: "Regular",
+                      }}
+                    >
+                      Select Measurement
+                    </Text>
+                  )}
+                  <Ionicons
+                    name={
+                      isMeasDropdownOpen
+                        ? "chevron-up-outline"
+                        : "chevron-down-outline"
+                    }
+                    size={22}
+                    color="black"
+                  />
+                </TouchableOpacity>
+                {isMeasDropdownOpen && (
+                  <ScrollView
+                    style={[styles.mainMeasermentdropdown]}
+                    nestedScrollEnabled={true}
+                  >
+                    {
+                      measurementData.map((item, index) => (
+                        <TouchableOpacity
+                          key={index}
+                          onPress={() => handleMeasSelect(item)}
+                          style={{
+                            flex: 0,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            padding: 10,
+                          }}
+                        >
+                          <View
+                            style={{
+                              flex: 0,
+                              flexDirection: "row",
+                              alignItems: "center",
+                            }}
+                          >
+                            <View>
+                              <Text style={styles.dropdownMeaserText}>
+                                {item.name}
+                              </Text>
+                            </View>
+                          </View>
+                        </TouchableOpacity>
+                      ))
+                    }
+                  </ScrollView>
+                )}
               </View>
             </View>
 
@@ -462,20 +583,30 @@ const EditOrder = ({ route }) => {
                 { marginBottom: responsiveHeight(3) },
               ]}
             >
-              <Text style={styles.label}>Measurement</Text>
-              <View style={styles.addMeasurementgrid}>
-                {editOrder.map((measurement, index) => (
-                  <View key={index} style={styles.measuremntcard}>
-                    <Text style={styles.measerlabel}>
-                      {measurement.part_name.charAt(0).toUpperCase() +
-                        measurement.part_name.slice(1)}
-                    </Text>
-                    <Text style={styles.measeureinput}>
-                      {measurement.mea_value}
-                    </Text>
-                  </View>
-                ))}
+              {measureBodyData == "" ? (
+                ""
+              ) : (
+                <Text style={styles.label}>Measurement</Text>
+              )}
+              <View style={styles.mainMeaserContainer}>
+                {measureBodyData.length > 0 && (
+                  <>
+                    <View style={styles.addMeasurementgrid}>
+                      {measureBodyData.map((measurement, index) => (
+                        <View key={index} style={styles.measuremntcard}>
+                          <Text style={styles.measerlabel}>
+                            {measurement.bp_part_name}
+                          </Text>
+                          <Text style={styles.measeureinput}>
+                            {measurement.meval_value}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  </>
+                )}
               </View>
+
             </View>
           </View>
           <View

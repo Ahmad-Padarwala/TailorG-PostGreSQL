@@ -175,7 +175,7 @@ const EditMeasurement = ({ route }) => {
                     ) : (
                       <Image
                         source={{
-                          uri: `${pathData.image_path}/uploads/dresses/${editMeasurement.dimage}`,
+                          uri: `${PORT}/uploads/dresses/${editMeasurement.dimage}`,
                         }}
                         style={{
                           width: responsiveWidth(8),

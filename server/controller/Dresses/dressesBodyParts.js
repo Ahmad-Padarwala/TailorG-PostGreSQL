@@ -64,7 +64,6 @@ const GetPerDressBodyParts = async (req, res) => {
       if (err) {
         res.status(500).json({ msg: "Data Error" });
       } else {
-        console.log(data);
         res.status(200).json(data);
       }
     });
@@ -73,6 +72,26 @@ const GetPerDressBodyParts = async (req, res) => {
   }
 };
 
+const GetDressBodyPartsWithCid = async (req, res) => {
+  const shopid = req.params.shopid;
+  const dressid = req.params.dressid;
+
+  try {
+    const q =
+      "SELECT * FROM public.dresses_part WHERE shop_id = $1 AND dresses_id = $2";
+
+    const values = [shopid, dressid];
+    client.query(q, values, (err, data) => {
+      if (err) {
+        res.status(500).json({ msg: "Data Error" });
+      } else {
+        res.status(200).json(data);
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 const GetCurrDressBodyParts = async (req, res) => {
   const uniquenumber = req.params.uniquenumber;
@@ -81,7 +100,6 @@ const GetCurrDressBodyParts = async (req, res) => {
   const gender = req.params.gender;
 
   try {
-    console.log(gender);
     const q =
       "SELECT dp.*, b.gender FROM public.dresses_part dp JOIN public.body_parts b ON dp.body_part_id = b.id WHERE b.gender =$4 AND dp.shop_id = $1 AND dp.dress_unique_number = $2 AND dp.dresses_id = $3";
     const values = [shopid, uniquenumber, dressid, gender];
@@ -131,6 +149,7 @@ const EditDressBodyParts = async (req, res) => {
 
 module.exports = {
   GetDressBodyParts,
+  GetDressBodyPartsWithCid,
   AddDressBodyParts,
   GetPerDressBodyParts,
   GetCurrDressBodyParts,

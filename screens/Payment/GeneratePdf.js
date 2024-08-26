@@ -118,7 +118,7 @@ const GeneratePdf = () => {
 
   //get all sum of amount
   const totalUserAmount = filteredPaymentData.reduce((sum, pay) => {
-    return sum + parseInt(pay.amount);
+    return sum + parseInt(pay.amount) + parseInt(pay.rounded);
   }, 0);
 
   //get data for total due
@@ -297,7 +297,7 @@ const GeneratePdf = () => {
   ${bankDetail.length > 0 ? `
     <div style="display: flex; align-items: center; border-radius: 6px; background-color: white; box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; margin-bottom: 2px;">
       <div style="padding:20px;">
-        <img src="${pathData.image_path}/uploads/bank/${bankDetail[0].image}"  width="140px" height="140px" />
+        <img src="${PORT}/uploads/bank/${bankDetail[0].image}"  width="140px" height="140px" />
       </div>
       <div>
         <p style="margin: 5px 0px;"><strong>${shopData.last_name} ${shopData.first_name}</strong></p>
@@ -717,7 +717,7 @@ const GeneratePdf = () => {
                     }}
                   >
                     <Image
-                      source={{ uri: `${pathData.image_path}/uploads/bank/${bankDetail[0].image}` }}
+                      source={{ uri: `${PORT}/uploads/bank/${bankDetail[0].image}` }}
                       style={{ width: "100%", height: responsiveHeight(12) }}
                     />
                   </View>

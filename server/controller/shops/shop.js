@@ -30,9 +30,6 @@ const editshopData = (req, res) => {
   const id = req.params.id;
   const { first_name, last_name, shop_name, contact_number, email, image } = req.body;
 
-  console.log(id);
-  // console.log("Received data:", { first_name, last_name, shop_name, contact_number, email, image });
-
   const sql = `UPDATE public.shops SET first_name=$1, last_name=$2, shop_name=$3, contact_number=$4, email=$5, profile_img=$6, updated_by=$7, updated_date=NOW() WHERE id=$8`;
   const data = [first_name, last_name, shop_name, contact_number, email, image, id, id];
 
@@ -41,7 +38,6 @@ const editshopData = (req, res) => {
       console.error("Error updating shop data:", error);
       return res.status(500).json({ error: "Error updating shop data" });
     }
-    console.log("Shop data updated successfully");
     return res.sendStatus(200);
   });
 };

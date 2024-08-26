@@ -101,7 +101,7 @@ const Home = () => {
   };
   //get all sum of amount
   const totalUserAmount = paymentData.reduce((sum, pay) => {
-    return sum + parseInt(pay.amount);
+    return sum + parseInt(pay.amount) + parseInt(pay.rounded);
   }, 0);
   //get data for total due
   const [totalDueData, setTotalDueData] = useState([]);
@@ -565,7 +565,7 @@ const Home = () => {
                       }}
                     >
                       <Image
-                        source={{ uri: `${pathData.image_path}/uploads/bank/${bankDetail[0].image}` }}
+                        source={{ uri: `${PORT}/uploads/bank/${bankDetail[0].image}` }}
                         style={{ width: "100%", height: responsiveHeight(12) }}
                       />
                     </View>

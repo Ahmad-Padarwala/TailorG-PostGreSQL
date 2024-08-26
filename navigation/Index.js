@@ -27,6 +27,7 @@ import AddPayment from "../screens/Payment/AddPayment";
 import EditPayment from "../screens/Payment/EditPayment";
 import AddOrder from "../screens/Order/AddOrder";
 import ViewOrder from "../screens/Order/ViewOrder";
+import Order from "../screens/Order/Order";
 import EditOrder from "../screens/Order/EditOrder";
 import ViewPayment from "../screens/Payment/ViewPayment";
 import CustomerOrder from "../screens/Order/CustomerOrder";
@@ -54,6 +55,7 @@ const Index = () => {
         <>
           <Stack.Screen name="home" component={HomeStack} />
           <Stack.Screen name="shopprofile" component={ShopProfile} />
+          <Stack.Screen name="Orders" component={Order} />
           <Stack.Screen name="shopeditprofile" component={ShopEditProfile} />
           <Stack.Screen name="addCustomer" component={AddCustomer} />
           <Stack.Screen name="viewcustomer" component={ViewCustomer} />

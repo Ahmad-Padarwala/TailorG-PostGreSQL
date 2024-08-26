@@ -20,7 +20,6 @@ const addBankDetails = async (req, res, fields) => {
                 console.log(err)
                 res.status(500).json({ msg: "Bank Details Cannot Added" });
             } else {
-                console.log(data + "11");
                 res.status(200).json({ message: "Bank Details added successfully" });
             }
         });

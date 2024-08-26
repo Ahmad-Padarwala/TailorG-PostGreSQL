@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   TouchableWithoutFeedback,
   Modal,
+  TextInput,
   FlatList,
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
@@ -16,8 +17,9 @@ import {
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 import Toast from 'react-native-toast-message';
+import { RadioButton } from "react-native-paper";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { styles, whiteColor, dangerColor } from "../../styles/style";
+import { styles, whiteColor, dangerColor, secondaryColor, primaryColor } from "../../styles/style";
 import { AuthContext } from "../../middleware/AuthReducer";
 import axios from "axios";
 const PORT = process.env.EXPO_PUBLIC_API_URL;
@@ -131,6 +133,61 @@ const ViewDress = ({ route }) => {
       }
     }
   };
+  //add model code
+
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const toggleModalVisibility = () => {
+
+    setModalVisible(!isModalVisible);
+
+  };
+
+  //add body parts data section
+  const [addBodyPart, setAddBodyPart] = useState({
+    part_name: "",
+    gender: "male",
+    shop_id: userToken,
+    dress_id: dressId,
+  });
+
+  const handleChange = (name, value) => {
+    setAddBodyPart((prevProdData) => ({
+      ...prevProdData,
+      [name]: value,
+    }));
+  };
+
+  const saveAddData = () => {
+    if (addBodyPart.part_name == "") {
+      alert("Please Insert Body Part Name");
+      return;
+    }
+    axios
+      .post(`${PORT}/addbodypartsdataindress/${uniquecode}`, addBodyPart)
+      .then((res) => {
+        setModalVisible(!isModalVisible);
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: 'body parts succesfully add',
+          visibilityTime: 5000, // Display the toast for 5 seconds
+          autoHide: true,
+          position: "bottom"
+        });
+        setAddBodyPart({
+          part_name: "",
+          gender: "male",
+          shop_id: userToken,
+        });
+        getDressData(dressId);
+        getBodyPartsName();
+        getPathData()
+      })
+      .catch((err) => {
+        console.error(err + "error in adding body parts data");
+      });
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -186,7 +243,20 @@ const ViewDress = ({ route }) => {
         </View>
         <View style={styles.line70}></View>
         <View style={{ marginTop: responsiveHeight(6) }}>
-          <View style={styles.dressContainermain}>
+          <View style={[styles.dressContainermain, {
+            paddingHorizontal: responsiveWidth(0), marginHorizontal: responsiveWidth(8),
+            backgroundColor: whiteColor,
+            elevation: 1.5,
+            shadowOffset: { width: 7, height: 7, blur: 10 },
+            shadowOpacity: 1,
+            shadowRadius: 7,
+            shadowColor: secondaryColor,
+            borderRadius: 7,
+            marginBottom: responsiveHeight(1),
+            paddingTop: responsiveHeight(1),
+            paddingBottom: responsiveHeight(1),
+            paddingHorizontal: responsiveWidth(1),
+          }]}>
             <View style={styles.dressContainer}>
               <View style={styles.imageContainer}>
                 {
@@ -202,7 +272,7 @@ const ViewDress = ({ route }) => {
                   ) : (
                     <Image
                       source={{
-                        uri: `${pathData.image_path}/uploads/dresses/${dressDetail.dress_image}`,
+                        uri: `${PORT}/uploads/dresses/${dressDetail.dress_image}`,
                       }}
                       style={{
                         width: "100%",
@@ -430,7 +500,167 @@ const ViewDress = ({ route }) => {
             </View>
           </View>
         </Modal>
-      </SafeAreaView>
+
+        {/* add modal */}
+
+        <Modal
+          animationType="slide"
+          transparent
+          visible={isModalVisible}
+          onRequestClose={toggleModalVisibility}
+          presentationStyle="overFullScreen"
+          onDismiss={toggleModalVisibility}
+        >
+          <View style={styles.viewWrapper}>
+            <View style={styles.modalView}>
+              <Text style={styles.modellabel}>
+                Body Parts Name <Text style={{ color: dangerColor }}>*</Text>
+              </Text>
+              <TextInput
+                placeholder="Enter Body Parts"
+                style={styles.modalinput}
+                onChangeText={(text) => handleChange("part_name", text)}
+                value={addBodyPart.part_name}
+              />
+              <Text style={styles.modellabel}>
+                Select Gender <Text style={{ color: dangerColor }}>*</Text>
+              </Text>
+              <View
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                <RadioButton
+                  value="male"
+                  status={
+                    addBodyPart.gender === "male" ? "checked" : "unchecked"
+                  }
+                  onPress={() => handleChange("gender", "male")}
+                  color={primaryColor}
+                  uncheckedColor={primaryColor}
+                />
+                <Text
+                  style={{
+                    textAlign: "center",
+                    marginTop: 6,
+                    opacity: 0.6,
+                    fontSize: responsiveFontSize(2),
+                    fontFamily: "Regular",
+                  }}
+                >
+                  Male
+                </Text>
+
+                <View style={{ marginLeft: 10 }}>
+                  <RadioButton
+                    value="female"
+                    status={
+                      addBodyPart.gender === "female" ? "checked" : "unchecked"
+                    }
+                    onPress={() => handleChange("gender", "female")}
+                    color={primaryColor}
+                    uncheckedColor={primaryColor}
+                  />
+                </View>
+                <Text
+                  style={{
+                    textAlign: "center",
+                    marginTop: 6,
+                    opacity: 0.6,
+                    fontSize: responsiveFontSize(2),
+                    fontFamily: "Regular",
+                  }}
+                >
+                  Female
+                </Text>
+              </View>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  marginTop: responsiveHeight(2),
+                  marginBottom: responsiveHeight(0),
+                }}
+              >
+                <View
+                  style={[
+                    styles.modelAlertbtn,
+                    {
+                      backgroundColor: dangerColor,
+                      marginRight: responsiveWidth(3.4),
+                    },
+                  ]}
+                >
+                  <TouchableOpacity
+                    onPress={toggleModalVisibility}
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: responsiveFontSize(2.3),
+                        color: whiteColor,
+                        fontFamily: "Regular",
+                      }}
+                    >
+                      Cancel
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View
+                  style={[
+                    styles.modelAlertbtn,
+                    {
+                      marginLeft: responsiveWidth(3.4),
+                      paddingVertical: responsiveWidth(2),
+                    },
+                  ]}
+                >
+                  <TouchableOpacity
+                    onPress={saveAddData}
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: responsiveFontSize(2.3),
+                        color: whiteColor,
+                        fontFamily: "Regular",
+                      }}
+                    >
+                      Save
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </View>
+        </Modal>
+        {/* add model */}
+        <View style={styles.addmaincontainer}>
+          <TouchableOpacity onPress={toggleModalVisibility}>
+            <View style={styles.innercontainer}>
+              <Text style={styles.pluscomptext}>
+                <Ionicons
+                  name="add-outline"
+                  size={35}
+                  color={whiteColor}
+                ></Ionicons>
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView >
     </>
   );
 };

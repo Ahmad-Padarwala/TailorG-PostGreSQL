@@ -49,14 +49,13 @@ const getAllPaymentData = (req, res) => {
         if (err) {
             res.status(500).json({ msg: "Data Error" });
         } else {
-            console.log(data.rows)
             res.status(200).json(data);
         }
     });
 }
 const getallpaymentdataForShop = (req, res) => {
     const { shopId } = req.params;
-    const q = `SELECT amount FROM public.payment WHERE shop_id=${shopId}`;
+    const q = `SELECT amount, rounded FROM public.payment WHERE shop_id=${shopId}`;
 
     client.query(q, (err, data) => {
         if (err) {

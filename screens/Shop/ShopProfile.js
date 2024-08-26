@@ -132,24 +132,6 @@ const ShopProfile = () => {
                 marginTop: responsiveHeight(1.3),
               }}
             >
-              <TouchableOpacity onPress={() => navigation.navigate("Orders")}>
-                <View style={styles.spacebetween}>
-                  <View style={styles.flexstart}>
-                    <Text style={styles.proicon}>
-                      <MaterialCommunityIcons
-                        name="clipboard-text"
-                        size={20}
-                        color="black"
-                      />
-                    </Text>
-                    <Text style={styles.prolistfont}>Orders</Text>
-                  </View>
-                  <Text>
-                    <AntDesign name="right" size={16} color="black" />
-                  </Text>
-                </View>
-              </TouchableOpacity>
-
               <TouchableOpacity
                 onPress={() => navigation.navigate("shopDresses")}
               >
@@ -165,7 +147,6 @@ const ShopProfile = () => {
                   </Text>
                 </View>
               </TouchableOpacity>
-
               <TouchableOpacity
                 onPress={() => navigation.navigate("bodyparts")}
               >
@@ -190,19 +171,17 @@ const ShopProfile = () => {
                 }}
               ></View>
 
-              <TouchableOpacity
-                onPress={() => navigation.navigate("shopeditprofile")}
-              >
+              <TouchableOpacity onPress={() => navigation.navigate("Orders")}>
                 <View style={styles.spacebetween}>
                   <View style={styles.flexstart}>
                     <Text style={styles.proicon}>
                       <MaterialCommunityIcons
-                        name="account"
+                        name="clipboard-text"
                         size={20}
                         color="black"
                       />
                     </Text>
-                    <Text style={styles.prolistfont}>Profile</Text>
+                    <Text style={styles.prolistfont}>Orders</Text>
                   </View>
                   <Text>
                     <AntDesign name="right" size={16} color="black" />
@@ -228,7 +207,25 @@ const ShopProfile = () => {
                   </Text>
                 </View>
               </TouchableOpacity>
-
+              <TouchableOpacity
+                onPress={() => navigation.navigate("shopeditprofile")}
+              >
+                <View style={styles.spacebetween}>
+                  <View style={styles.flexstart}>
+                    <Text style={styles.proicon}>
+                      <MaterialCommunityIcons
+                        name="account"
+                        size={20}
+                        color="black"
+                      />
+                    </Text>
+                    <Text style={styles.prolistfont}>Profile</Text>
+                  </View>
+                  <Text>
+                    <AntDesign name="right" size={16} color="black" />
+                  </Text>
+                </View>
+              </TouchableOpacity>
               <TouchableOpacity onPress={handleLogout}>
                 <View style={styles.spacebetween}>
                   <View style={styles.flexstart}>

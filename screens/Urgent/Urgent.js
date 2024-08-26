@@ -147,7 +147,7 @@ const Urgent = () => {
                           ) : (
                             <Image
                               source={{
-                                uri: `${pathData.image_path}/uploads/dresses/${item.dress_image}`,
+                                uri: `${PORT}/uploads/dresses/${item.dress_image}`,
                               }}
                               style={{
                                 width: "70%",

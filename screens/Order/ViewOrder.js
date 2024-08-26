@@ -219,7 +219,7 @@ const ViewOrder = ({ route }) => {
                     ) : (
                       <Image
                         source={{
-                          uri: `${pathData.image_path}/uploads/dresses/${viewOrder[0].dress_image}`,
+                          uri: `${PORT}/uploads/dresses/${viewOrder[0].dress_image}`,
                         }}
                         style={{
                           width: "70%",

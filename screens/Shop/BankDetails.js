@@ -356,7 +356,7 @@ const BankDetails = () => {
                   <Image source={{ uri: newImage }} style={{ width: "90%", height: "90%", borderRadius: 3 }} />
                 ) : (
                   <Image
-                    source={{ uri: `${pathData.image_path}/uploads/bank/${bankDetails[0].image}` }}
+                    source={{ uri: `${PORT}/uploads/bank/${bankDetails[0].image}` }}
                     style={{ width: "90%", height: "90%", borderRadius: 3 }}
                   />
                 )}

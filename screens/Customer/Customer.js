@@ -89,9 +89,8 @@ const Customer = () => {
 
   const filterData = customerData.filter((item) => {
     const totalOrderValue = parseFloat(item.total_order_value) || 0;
-    const totalAmount = parseFloat(item.total_amount) || 0;
+    const totalAmount = parseFloat(item.total_amount) + parseFloat(item.rounded) || 0;
     const result = totalAmount - totalOrderValue;
-
     if (Ordertype === "Credit" && result < 0) {
       return false;
     }
@@ -226,7 +225,7 @@ const Customer = () => {
                 renderItem={({ item }) => {
 
                   const totalOrderValue = parseFloat(item.total_order_value) || 0;
-                  const totalAmount = parseFloat(item.total_amount) || 0;
+                  const totalAmount = parseFloat(item.total_amount) + parseFloat(item.rounded) || 0;
 
                   const result = totalAmount - totalOrderValue;
                   return (
@@ -254,7 +253,7 @@ const Customer = () => {
                                 fontSize: responsiveFontSize(3),
                                 color: whiteColor,
                                 fontFamily: "Regular",
-                                marginTop: 3, // Remove any margin to ensure full centering
+                                marginTop: 3,
                               },
                             ]}
                           >

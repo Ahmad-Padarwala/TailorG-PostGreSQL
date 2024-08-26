@@ -8,6 +8,7 @@ router.route("/getdressbodyparts/:shopid/:dressid/:uniquenumber").get(DressBodyP
 router.route("/getcurrdressbodyparts/:shopid/:uniquenumber/:dressid/:gender").get(DressBodyParts.GetCurrDressBodyParts)
 router.route("/adddressesbodyparts/:id").post(DressBodyParts.AddDressBodyParts)
 router.route("/editdressesbodyparts/:shopid/:dressid").patch(DressBodyParts.EditDressBodyParts)
+router.route("/getdressbodypartswithcid/:shopid/:dressid").get(DressBodyParts.GetDressBodyPartsWithCid);
 
 
 module.exports = router;

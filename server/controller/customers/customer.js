@@ -47,16 +47,17 @@ const addcustomerdata = (req, res) => {
     }
   });
 };
-
 const getAllCustomerData = (req, res) => {
   const id = req.params.id;
   const q = `
     SELECT cs.id, cs.customer_name, cs.address, cs.mobile_number, cs.bg_color,
            COALESCE(py.total_amount, 0) AS total_amount,
+           COALESCE(py.rounded, 0) AS rounded,
            COALESCE(co.total_order_value, 0) AS total_order_value
     FROM customer AS cs
     LEFT JOIN (
-        SELECT customer_id, SUM(CAST(amount AS NUMERIC)) AS total_amount
+        SELECT customer_id, SUM(CAST(amount AS NUMERIC)) AS total_amount, 
+        SUM(CAST(rounded AS NUMERIC)) AS rounded
         FROM payment
         GROUP BY customer_id
     ) AS py ON py.customer_id = cs.id
@@ -66,7 +67,7 @@ const getAllCustomerData = (req, res) => {
         GROUP BY customer_id
     ) AS co ON co.customer_id = cs.id
     WHERE cs.shop_id = $1
-    GROUP BY cs.id, cs.customer_name, cs.address, cs.mobile_number, cs.bg_color, py.total_amount, co.total_order_value;
+    GROUP BY cs.id, cs.customer_name, cs.address, cs.mobile_number, cs.bg_color, py.total_amount, py.rounded, co.total_order_value;
   `;
 
   client.query(q, [id], (err, data) => {
@@ -78,6 +79,37 @@ const getAllCustomerData = (req, res) => {
     }
   });
 };
+
+// const getAllCustomerData = (req, res) => {
+//   const id = req.params.id;
+//   const q = `
+//     SELECT cs.id, cs.customer_name, cs.address, cs.mobile_number, cs.bg_color,
+//            COALESCE(py.total_amount, 0) AS total_amount,
+//            COALESCE(co.total_order_value, 0) AS total_order_value
+//     FROM customer AS cs
+//     LEFT JOIN (
+//         SELECT customer_id, SUM(CAST(amount AS NUMERIC)) AS total_amount
+//         FROM payment
+//         GROUP BY customer_id
+//     ) AS py ON py.customer_id = cs.id
+//     LEFT JOIN (
+//         SELECT customer_id, SUM(CAST(price AS NUMERIC) * CAST(qty AS NUMERIC)) AS total_order_value
+//         FROM customer_order
+//         GROUP BY customer_id
+//     ) AS co ON co.customer_id = cs.id
+//     WHERE cs.shop_id = $1
+//     GROUP BY cs.id, cs.customer_name, cs.address, cs.mobile_number, cs.bg_color, py.total_amount, co.total_order_value;
+//   `;
+
+//   client.query(q, [id], (err, data) => {
+//     if (err) {
+//       console.error(err);
+//       res.status(500).json({ msg: "Data Error" });
+//     } else {
+//       res.status(200).json(data.rows);
+//     }
+//   });
+// };
 
 const getCustomerDataWithId = (req, res) => {
   const id = req.params.id;

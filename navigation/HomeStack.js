@@ -15,6 +15,7 @@ import Customer from "../screens/Customer/Customer";
 import { primaryColor, secondaryColor, whiteColor } from "../styles/style";
 import { Text, View, Dimensions } from "react-native";
 import Order from "../screens/Order/Order";
+import AllDresses from "../screens/Dresses/AllDresses";
 import Urgent from "../screens/Urgent/Urgent";
 import { useFonts } from "expo-font/build/FontHooks";
 import Home from "../screens/Home";
@@ -105,7 +106,7 @@ export default function HomeStack() {
       />
 
       <Tab.Screen
-        name="Orders"
+        name="shopDresses"
         options={{
           tabBarIcon: ({ focused }) => {
             return (
@@ -125,11 +126,7 @@ export default function HomeStack() {
                     alignItems: "center",
                   }}
                 >
-                  <MaterialCommunityIcons
-                    name="note-text"
-                    size={24}
-                    color={focused ? primaryColor : secondaryColor}
-                  />
+                  <MaterialIcons name="checkroom" size={24} color={focused ? primaryColor : secondaryColor} />
                   <Text
                     style={{
                       color: focused ? primaryColor : secondaryColor,
@@ -137,7 +134,7 @@ export default function HomeStack() {
                       fontSize: width * 0.03,
                     }}
                   >
-                    Orders
+                    Dresses
                   </Text>
                 </View>
               </View>
@@ -147,7 +144,7 @@ export default function HomeStack() {
           tabBarActiveTintColor: primaryColor,
           tabBarLabel: "",
         }}
-        component={Order}
+        component={AllDresses}
       />
 
       <Tab.Screen

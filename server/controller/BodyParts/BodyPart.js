@@ -131,19 +131,48 @@ const deleteBodyPart = (req, res) => {
     }
   });
 };
+const addBodyPartDataInDress = async (req, res) => {
+  const uniquecode = req.params.uniquecode;
+  const { part_name, gender, shop_id, dress_id } = req.body;
 
-// const deleteBodyPart = (req, res) => {
-//   const id = req.params.id;
-//   const q = `DELETE FROM public.body_parts WHERE id=${id}`;
+  try {
+    await client.query("BEGIN");
 
-//   client.query(q, (err, data) => {
-//     if (err) {
-//       res.status(500).json({ msg: "Data Error" });
-//     } else {
-//       res.sendStatus(200);
-//     }
-//   });
-// };
+    const values = [part_name, gender, 1, parseInt(shop_id)];
+    const bodyPartQuery = `
+    INSERT INTO public.body_parts (
+      part_name,
+      gender,
+      status,
+      shop_id
+      ) VALUES ($1, $2, $3, $4)
+      RETURNING id
+      `;
+
+    const response = await client.query(bodyPartQuery, values);
+
+    // Get the inserted id
+
+    const addedId = response.rows[0].id;
+
+    const queryText =
+      "INSERT INTO dresses_part (body_part_id, dresses_id, shop_id, dress_unique_number) VALUES ($1, $2, $3, $4)";
+    const queryTextvalues = [addedId, dress_id, parseInt(shop_id), uniquecode];
+    await client.query(queryText, queryTextvalues);
+
+    // Commit transaction
+    await client.query("COMMIT");
+
+    // Send success response
+    res.status(200).json({ message: "Dress Added Successfully" });
+
+  } catch (error) {
+    // Rollback transaction in case of error
+    await client.query("ROLLBACK");
+    console.log(error);
+    res.status(500).json({ message: error.message });
+  }
+};
 
 const getBodyPartName = (req, res) => {
   const shopid = req.params.shopid;
@@ -159,9 +188,28 @@ const getBodyPartName = (req, res) => {
   });
 };
 
+const addNewBodypartinmeasurement = (req, res) => {
+  const { dress_part_id, mea_value, customer_measurement_id, customer_id, shop_id } = req.body;
+  console.log(req.body)
+  const q = `INSERT INTO public.customer_measurement_value (dresses_part_id, mea_value, customer_measurement_id, customer_id, shop_id) VALUES ($1, $2, $3, $4, $5)`;
+  const values = [dress_part_id, mea_value, customer_measurement_id, customer_id, parseInt(shop_id)];
+
+  client.query(q, values, (err, data) => {
+    if (err) {
+      console.error("Database query error: ", err); // Log the error for debugging
+      res.status(500).json({ msg: "Data Error", error: err.message });
+    } else {
+      res.status(200).json(data);
+    }
+  });
+};
+
+
 module.exports = {
   addBodyPartData,
+  addBodyPartDataInDress,
   getBodyPartData,
+  addNewBodypartinmeasurement,
   getEditBodyPartData,
   changeStatusBodypart,
   updateBodyPartData,

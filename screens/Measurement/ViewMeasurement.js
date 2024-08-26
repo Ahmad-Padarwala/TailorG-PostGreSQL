@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -24,6 +24,7 @@ import {
   responsiveHeight,
   responsiveWidth,
 } from "react-native-responsive-dimensions";
+import { AuthContext } from "../../middleware/AuthReducer";
 import axios from "axios";
 
 const PORT = process.env.EXPO_PUBLIC_API_URL;
@@ -31,14 +32,19 @@ const PORT = process.env.EXPO_PUBLIC_API_URL;
 const ViewMeasurement = ({ route }) => {
   const navigation = useNavigation();
   const id = route.params.id;
+  const cust_id = route.params.cust_id;
   const customerName = route.params.cust_name;
+  const { userToken } = useContext(AuthContext);
   const [viewMeasurement, setViewMeasurement] = useState([]);
+  const [newMeasurementData, setNewMeasurementData] = useState([]);
+  const [dressId, setDressId] = useState(null);
 
   const getViewMeasurementData = async () => {
     try {
       const response = await axios.get(`${PORT}/getviewmeasurementdata/${id}`);
       const customerRows = response.data.rows;
       setViewMeasurement(customerRows);
+      setDressId(customerRows[0].id);
     } catch (error) {
       console.error(error + "error in getting view measurement data");
     }
@@ -91,6 +97,54 @@ const ViewMeasurement = ({ route }) => {
 
     return `${day}/${month}/${year}`;
   };
+
+  const refreshTheMeasData = async () => {
+    try {
+      // Get the new data
+      const response = await axios.get(`${PORT}/getdressbodypartswithcid/${userToken}/${dressId}`);
+      const newMeasurementData = response.data.rows;
+
+      // Check for new body parts
+      const oldBodyPartIds = viewMeasurement.map(item => item.dp_body_part_id);
+
+      newMeasurementData.forEach(newItem => {
+        if (!oldBodyPartIds.includes(newItem.body_part_id)) {
+          axios.post(`${PORT}/addnewbodypartinmeasurement`, {
+            dress_part_id: newItem.id,
+            mea_value: 0,
+            customer_measurement_id: viewMeasurement[0].cm_id,
+            customer_id: cust_id,
+            shop_id: userToken,
+          })
+            .then(() => {
+              getViewMeasurementData();
+              Toast.show({
+                type: 'success',
+                text1: 'success',
+                text2: "Measurement Body Part Added Successfully",
+                visibilityTime: 5000, // Display the toast for 5 seconds
+                autoHide: true,
+                position: "bottom"
+              });
+            })
+            .catch((err) => {
+              console.error(err);
+            });
+        }
+        Toast.show({
+          type: 'success',
+          text1: 'success',
+          text2: "Measurement Body Part is Upto date",
+          visibilityTime: 5000, // Display the toast for 5 seconds
+          autoHide: true,
+          position: "bottom"
+        });
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
 
   useFocusEffect(
     React.useCallback(() => {
@@ -146,7 +200,7 @@ const ViewMeasurement = ({ route }) => {
             />
           </TouchableOpacity>
         </View>
-        <View style={{ width: responsiveWidth(80) }}>
+        <View style={{ width: responsiveWidth(79) }}>
           <Text
             style={{
               alignSelf: "center",
@@ -157,9 +211,23 @@ const ViewMeasurement = ({ route }) => {
             {truncateString(customerName, 6)} Measurement
           </Text>
         </View>
+        <View style={{ width: responsiveWidth(8) }}>
+          <TouchableOpacity onPress={() => refreshTheMeasData()}>
+            <MaterialIcons
+              name="autorenew"
+              size={23}
+              color="black"
+              style={{
+                marginTop: responsiveHeight(0.4),
+              }}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.line70}></View>
-      <ScrollView style={{ marginBottom: responsiveHeight(17) }}>
+      <ScrollView style={{
+        marginBottom: responsiveHeight(5)
+      }}>
         {Object.values(groupedData).map((group, index) => (
           <View
             key={index}
@@ -188,7 +256,7 @@ const ViewMeasurement = ({ route }) => {
                     ) : (
                       <Image
                         source={{
-                          uri: `${pathData.image_path}/uploads/dresses/${group.dress_image}`,
+                          uri: `${PORT}/uploads/dresses/${group.dress_image}`,
                         }}
                         style={{
                           width: responsiveWidth(8),
@@ -278,7 +346,7 @@ const ViewMeasurement = ({ route }) => {
             marginHorizontal: responsiveWidth(8),
             marginTop: responsiveHeight(-3),
             paddingBottom: responsiveHeight(3.4),
-            justifyContent: "space-between",
+            justifyContent: "space-between"
           },
         ]}
       >
@@ -447,7 +515,7 @@ const ViewMeasurement = ({ route }) => {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 };
 

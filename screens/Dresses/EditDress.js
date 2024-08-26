@@ -278,7 +278,7 @@ const EditDress = ({ route }) => {
                   />
                 ) : (
                   <Image
-                    source={{ uri: `${pathData.image_path}/uploads/dresses/${image}` }}
+                    source={{ uri: `${PORT}/uploads/dresses/${image}` }}
                     style={{ width: "90%", height: "90%" }}
                   />
                 )}

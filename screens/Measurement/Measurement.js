@@ -163,6 +163,7 @@ const Measurement = ({ route }) => {
                   navigation.navigate("viewmeasurement", {
                     id: item.cm_id,
                     cust_name: customerName,
+                    cust_id: id,
                   })
                 }
                 style={styles.mainMeasurmentSection}
@@ -190,7 +191,7 @@ const Measurement = ({ route }) => {
                       ) : (
                         <Image
                           source={{
-                            uri: `${pathData.image_path}/uploads/dresses/${item.dress_image}`,
+                            uri: `${PORT}/uploads/dresses/${item.dress_image}`,
                           }}
                           style={{
                             width: responsiveWidth(8),

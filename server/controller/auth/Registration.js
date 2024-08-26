@@ -75,8 +75,6 @@ const addRegisterShopData = async (req, res) => {
 // Function to login shop master
 const loginShopMaster = async (req, res) => {
   const { identifier, password } = req.body;
-  console.log(identifier);
-
   try {
     // Check if identifier is a contact number or email
     const isContactNumber = /^\d+$/.test(identifier);

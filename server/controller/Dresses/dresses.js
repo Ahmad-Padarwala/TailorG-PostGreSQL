@@ -86,7 +86,6 @@ const getDressDetail = async (req, res) => {
       if (err) {
         res.status(500).json({ msg: "Data Error" });
       } else {
-        console.log(data);
         res.status(200).json(data);
       }
     });
@@ -172,7 +171,6 @@ const EditDress = async (req, res, fields) => {
         console.log(err);
         res.status(500).json({ msg: "Dress Cannot Added" });
       } else {
-        console.log(data);
         res.status(200).json({ message: "Dress added successfully" });
       }
     });

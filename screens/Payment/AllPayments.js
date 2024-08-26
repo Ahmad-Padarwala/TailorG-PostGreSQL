@@ -81,7 +81,7 @@ const AllPayments = ({ route }) => {
   };
   //get all sum of amount
   const totalUserAmount = paymentData.reduce((sum, pay) => {
-    return sum + parseInt(pay.amount);
+    return sum + parseInt(pay.amount) + parseInt(pay.rounded);
   }, 0);
   //get data for total due
   const [totalDueData, setTotalDueData] = useState([]);

@@ -72,8 +72,7 @@ const ConfirmOrder = ({ route }) => {
         </View>
         <View>
           <Text style={{ fontFamily: "Regular", textAlign: "center" }}>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry.
+            Thank you for your purchase! Your order has been confirmed and is being processed. You can track your order status in your order history.
           </Text>
         </View>
         <View style={{ marginTop: responsiveHeight(2) }}>

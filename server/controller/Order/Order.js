@@ -181,8 +181,6 @@ WHERE
 };
 const getViewCustomerOrder = (req, res) => {
   const id = req.params.id;
-  console.log(id);
-
   const q = `SELECT 
     co.id,
     co.price,
@@ -228,8 +226,6 @@ const getViewCustomerOrder = (req, res) => {
       console.error(err);
       res.status(500).json({ msg: "Data Error" });
     } else {
-      console.log("object");
-      console.log(data.rows);
       res.status(200).json(data);
     }
   });
@@ -270,10 +266,10 @@ const OrderStatusChange = async (req, res) => {
   });
 };
 const UpdateCustomerOrderData = async (req, res) => {
-  const { delivery_date, order_date, price, qty, special_note, urgent } =
+  const { delivery_date, order_date, price, qty, special_note, urgent, customer_measurement_id } =
     req.body;
   const id = req.params.id;
-  let sql = `UPDATE public.customer_order SET price=$1, qty=$2, order_date=$3, delivery_date=$4, special_note=$5, urgent=$6 WHERE id=$7`;
+  let sql = `UPDATE public.customer_order SET price=$1, qty=$2, order_date=$3, delivery_date=$4, special_note=$5, urgent=$6, customer_measurement_id=$7 WHERE id=$8`;
   const values = [
     price,
     qty,
@@ -281,6 +277,7 @@ const UpdateCustomerOrderData = async (req, res) => {
     delivery_date,
     special_note,
     urgent,
+    customer_measurement_id,
     id,
   ];
   client.query(sql, values, (err, data) => {

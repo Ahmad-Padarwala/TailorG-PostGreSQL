@@ -234,7 +234,7 @@ const AddMeasurement = ({ route }) => {
                         ) : (
                           <Image
                             source={{
-                              uri: `${pathData.image_path}/uploads/dresses/${selectedDressType.dress_image}`,
+                              uri: `${PORT}/uploads/dresses/${selectedDressType.dress_image}`,
                             }}
                             style={{
                               width: responsiveWidth(8),
@@ -319,7 +319,7 @@ const AddMeasurement = ({ route }) => {
                               ) : (
                                 <Image
                                   source={{
-                                    uri: `${pathData.image_path}/uploads/dresses/${item.dress_image}`,
+                                    uri: `${PORT}/uploads/dresses/${item.dress_image}`,
                                   }}
                                   style={{
                                     width: responsiveWidth(8),
