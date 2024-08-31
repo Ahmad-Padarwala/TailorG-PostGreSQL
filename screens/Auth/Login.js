@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import React, { useState, useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { useFonts } from "expo-font/build/FontHooks";
 import { dangerColor, styles } from "../../styles/style";
 import { MaterialIcons } from "@expo/vector-icons";
 import {
@@ -26,6 +27,14 @@ const Login = () => {
   const [loginData, setLoginData] = useState({
     identifier: "",
     password: "",
+  });
+  const [Fontloaded] = useFonts({
+    Medium: require("../../assets/Font/Poppins-Medium.ttf"),
+    Bold: require("../../assets/Font/Poppins-Bold.ttf"),
+    ExtraBold: require("../../assets/Font/Poppins-ExtraBold.ttf"),
+    Regular: require("../../assets/Font/Poppins-Regular.ttf"),
+    SemiBold: require("../../assets/Font/Poppins-SemiBold.ttf"),
+    Light: require("../../assets/Font/Poppins-Light.ttf"),
   });
   const [showPassword, setShowPassword] = useState(false);
 
@@ -65,7 +74,9 @@ const Login = () => {
       Alert.alert("Error", "Failed to login. Please try again later.");
     }
   };
-
+  if (!Fontloaded) {
+    return null;
+  }
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={[styles.container, { height: responsiveHeight(100) }]}>

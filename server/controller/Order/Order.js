@@ -269,6 +269,7 @@ const UpdateCustomerOrderData = async (req, res) => {
   const { delivery_date, order_date, price, qty, special_note, urgent, customer_measurement_id } =
     req.body;
   const id = req.params.id;
+  console.log(req.body)
   let sql = `UPDATE public.customer_order SET price=$1, qty=$2, order_date=$3, delivery_date=$4, special_note=$5, urgent=$6, customer_measurement_id=$7 WHERE id=$8`;
   const values = [
     price,

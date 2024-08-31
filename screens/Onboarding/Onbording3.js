@@ -5,13 +5,19 @@ import { styles } from "../../styles/style";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import GestureRecognizer from "react-native-swipe-gestures";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Onbording3 = () => {
   const navigation = useNavigation();
-  const GetStarted = () => {
-    // AsyncStorage.setItem("hasLaunched", "true")
-    navigation.navigate("authroute");
+  const GetStarted = async () => {
+    try {
+      await AsyncStorage.setItem("isFirstTime", "1");
+      navigation.navigate("authroute");
+    } catch (error) {
+      console.log("Error saving data", error);
+    }
   };
+
   const onSwipeRight = () => {
     navigation.navigate("Onbording2");
   };
@@ -37,8 +43,8 @@ const Onbording3 = () => {
           <View style={styles.content}>
             <Text style={styles.headingtext}>We Crafting Dreams</Text>
             <Text style={styles.paratext}>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi
-              itaque.
+              TailorG brings your style visions to life with precision and care.
+
             </Text>
           </View>
 

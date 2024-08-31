@@ -4,6 +4,7 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
+  Linking,
   Image,
   Alert,
   TextInput,
@@ -25,7 +26,7 @@ const PORT = process.env.EXPO_PUBLIC_API_URL;
 const Registration = () => {
   const [checked, setChecked] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
+  const [passwordStrength, setPasswordStrength] = useState("");
   const [registrationData, setRegistrationData] = useState({
     fname: "",
     lname: "",
@@ -35,37 +36,70 @@ const Registration = () => {
     password: "",
     otp: "",
   });
+  const [resendVisible, setResendVisible] = useState(false);
+  const [isResendDisabled, setIsResendDisabled] = useState(true);
+  const [countdown, setCountdown] = useState(30);
   const [isOTPMode, setIsOTPMode] = useState(false);
   const { signin } = useContext(AuthContext);
   const navigation = useNavigation();
-  const [shopData, setShopData] = useState([]);
-  const getShopData = async () => {
-    await axios
-      .get(`${PORT}/getshopalldata`)
-      .then((res) => {
-        setShopData(res.data.rows[0]);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  };
-  useEffect(() => {
-    getShopData();
-  }, [])
+
   // Handle input change
   const handleChange = (name, value) => {
     setRegistrationData((prevRegData) => ({
       ...prevRegData,
       [name]: value,
     }));
+    if (name === "password") {
+      checkPasswordStrength(value); // Call the strength check function on password change
+    }
   };
+  const openLink = (url) => {
+    Linking.openURL(url).catch(err => console.error("Failed to open URL:", err));
+  };
+  const checkPasswordStrength = (password) => {
+    const minLength = 8;
+    const upperCasePattern = /[A-Z]/;
+    const lowerCasePattern = /[a-z]/;
+    const numberPattern = /[0-9]/;
+    const specialCharPattern = /[!@#$%^&*(),.?":{}|<>]/;
 
+    let strength = "";
+
+    if (password.length < minLength) {
+      strength = "Too Short";
+    } else {
+      const conditionsMet =
+        (upperCasePattern.test(password) ? 1 : 0) +
+        (lowerCasePattern.test(password) ? 1 : 0) +
+        (numberPattern.test(password) ? 1 : 0) +
+        (specialCharPattern.test(password) ? 1 : 0);
+
+      switch (conditionsMet) {
+        case 1:
+        case 2:
+          strength = "Weak";
+          break;
+        case 3:
+          strength = "Medium";
+          break;
+        case 4:
+          strength = "Strong";
+          break;
+        default:
+          strength = "Weak";
+      }
+    }
+    setPasswordStrength(strength);
+  };
   // Validate contact number
   const validateContact = (contact) => {
     const contactPattern = /^[0-9]{10}$/;
     return contactPattern.test(contact);
   };
-
+  const handlePress = () => {
+    Linking.openURL('tel:9151715158')
+      .catch((err) => console.error('An error occurred', err));
+  };
   // Validate email
   const validateEmail = (email) => {
     if (!email.trim()) {
@@ -78,17 +112,8 @@ const Registration = () => {
   // Validate password
   const validatePassword = (password) => {
     const minLength = 8;
-    const upperCasePattern = /[A-Z]/;
-    const lowerCasePattern = /[a-z]/;
-    const numberPattern = /[0-9]/;
-    const specialCharPattern = /[!@#$%^&*(),.?":{}|<>]/;
-
     return (
-      password.length >= minLength &&
-      upperCasePattern.test(password) &&
-      lowerCasePattern.test(password) &&
-      numberPattern.test(password) &&
-      specialCharPattern.test(password)
+      password.length >= minLength
     );
   };
 
@@ -105,6 +130,8 @@ const Registration = () => {
       if (res.data.success) {
         setIsOTPMode(true);
         Alert.alert("OTP Sent", "OTP sent to your contact number");
+        setIsResendDisabled(true);
+        setCountdown(30);
       } else {
         Alert.alert("Error", res.data.msg);
       }
@@ -138,7 +165,6 @@ const Registration = () => {
       Alert.alert("Error", "Failed to verify OTP. Please try again later.");
     }
   };
-
   // Handle registration submission
   const addRegistrationData = async () => {
     const { fname, lname, shop_name, contact, email, password } = registrationData;
@@ -206,11 +232,31 @@ const Registration = () => {
     }
   };
 
+  const resendOTP = async () => {
+    setResendVisible(false);
+    await requestOTP(); 
+  };
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timerId = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timerId); // Cleanup timer on component unmount
+    } else {
+      setIsResendDisabled(false); // Enable the Resend OTP button when countdown reaches 0
+    }
+  }, [countdown]);
+
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.container}>
-        <View style={styles.loginHead}>
-          <View style={styles.loginHeadText}>
+        <View style={[styles.loginHead, {
+          paddingTop: responsiveHeight(0),
+          paddingBottom: responsiveHeight(0),
+          height: responsiveHeight(14),
+        }]}>
+          <View style={[styles.loginHeadText, { marginTop: responsiveHeight(0) }]}>
             <Text style={styles.headingtext}>Getting Started</Text>
             <Text style={styles.desctext}>Create an Account To Continue</Text>
           </View>
@@ -305,6 +351,11 @@ const Registration = () => {
                 )}
               </TouchableOpacity>
             </View>
+            {registrationData.password.length > 0 && (
+              <Text style={{ color: passwordStrength === "Strong" ? "green" : passwordStrength === "Medium" ? "orange" : "red", marginTop: 5 }}>
+                {passwordStrength}
+              </Text>
+            )}
           </View>
           <View style={styles.inputfield}>
             <Text style={styles.label}>Contact Number<Text style={{ color: dangerColor }}>*</Text></Text>
@@ -320,20 +371,15 @@ const Registration = () => {
           </View>
           {!isOTPMode ? (
             <View style={[styles.inputfield]}>
-              {
-                !vop ? (
-                  <TouchableOpacity
-                    style={styles.onlybtn}
-                    onPress={requestOTP}
-                    disabled={!validateContact(registrationData.contact)}
-                  >
-                    <Text style={styles.onlybtntext}>Send OTP</Text>
-                  </TouchableOpacity>
-                ) : (
-                  ""
-                )
-              }
-
+              {!vop && (
+                <TouchableOpacity
+                  style={styles.onlybtn}
+                  onPress={requestOTP}
+                  disabled={!validateContact(registrationData.contact)}
+                >
+                  <Text style={styles.onlybtntext}>Send OTP</Text>
+                </TouchableOpacity>
+              )}
             </View>
           ) : (
             <View style={styles.inputfield}>
@@ -352,6 +398,21 @@ const Registration = () => {
               >
                 <Text style={styles.onlybtntext}>Verify OTP</Text>
               </TouchableOpacity>
+              {/* <TouchableOpacity
+                style={styles.resendBtn}
+              >
+                <Text style={styles.resendbtntext}>Resend OTP</Text>
+              </TouchableOpacity> */}
+              <TouchableOpacity
+                style={[styles.resendBtn, isResendDisabled && { opacity: 0.5 }]}
+                onPress={resendOTP}
+                disabled={isResendDisabled}
+              >
+                <Text style={styles.resendbtntext}>{isResendDisabled
+                  ? `Resend OTP in ${countdown} seconds`
+                  : "Resend OTP"}
+                </Text>
+              </TouchableOpacity>
             </View>
           )}
           <View style={styles.agreegroup}>
@@ -362,8 +423,10 @@ const Registration = () => {
             />
             <Text style={{ paddingRight: 40, fontFamily: "Regular" }}>
               I agree to the{" "}
-              <Text style={{ color: primaryColor }}>Terms of Service</Text>{" "}
-              and <Text style={{ color: primaryColor }}>Privacy policy</Text>
+              <TouchableOpacity onPress={() => openLink('https://tailorg.com/termsandconditions.html')}>
+                <Text style={{ color: primaryColor }}>Terms of Service</Text>
+              </TouchableOpacity>{" "}
+              and {" "}<TouchableOpacity onPress={() => openLink('https://tailorg.com/privacypolicy.html')}><Text style={{ color: primaryColor }}>Privacy policy</Text></TouchableOpacity>
             </Text>
           </View>
           <View style={{ marginTop: 20 }}>
@@ -378,12 +441,30 @@ const Registration = () => {
               <Text style={styles.onlybtntext}>Create Account</Text>
             </TouchableOpacity>
           </View>
+
           <View
             style={[
               styles.bottom,
               {
                 marginBottom: responsiveHeight(1),
-                marginTop: responsiveHeight(4),
+                marginTop: responsiveHeight(1),
+                paddingTop: responsiveHeight(0)
+              },
+            ]}
+          >
+            <Text style={{ fontFamily: "Regular", textAlign: "center" }}>
+              If you  have any question ?{" "}
+            </Text>
+            <TouchableOpacity onPress={handlePress}>
+              <Text style={styles.link}>9151715158</Text>
+            </TouchableOpacity>
+          </View>
+          <View
+            style={[
+              styles.bottom,
+              {
+                marginBottom: responsiveHeight(1),
+                paddingTop: responsiveHeight(0),
               },
             ]}
           >

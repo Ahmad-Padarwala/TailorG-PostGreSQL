@@ -14,7 +14,6 @@ import ShopProfile from "../screens/Shop/ShopProfile";
 import Customer from "../screens/Customer/Customer";
 import { primaryColor, secondaryColor, whiteColor } from "../styles/style";
 import { Text, View, Dimensions } from "react-native";
-import Order from "../screens/Order/Order";
 import AllDresses from "../screens/Dresses/AllDresses";
 import Urgent from "../screens/Urgent/Urgent";
 import { useFonts } from "expo-font/build/FontHooks";

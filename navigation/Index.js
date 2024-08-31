@@ -1,5 +1,6 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../middleware/AuthReducer";
 import Onboardingroute from "./routes/OnbordingRoute";
 import AuthRoute from "./routes/AuthRoute";
@@ -33,11 +34,26 @@ import ViewPayment from "../screens/Payment/ViewPayment";
 import CustomerOrder from "../screens/Order/CustomerOrder";
 import BankDetails from "../screens/Shop/BankDetails";
 import GeneratePdf from "../screens/Payment/GeneratePdf";
+import HelpPage from "../screens/Shop/HelpPage";
 
 const Stack = createNativeStackNavigator();
 
 const Index = () => {
   const { userToken, isLoading } = useContext(AuthContext);
+  const [isFirstTime, setIsFirstTime] = useState(null);
+
+  useEffect(() => {
+    const checkFirstTime = async () => {
+      try {
+        const value = await AsyncStorage.getItem("isFirstTime");
+        setIsFirstTime(value !== "1");
+      } catch (error) {
+        console.log("Error reading AsyncStorage", error);
+      }
+    };
+
+    checkFirstTime();
+  }, []);
 
   if (isLoading) {
     // Add a loading screen if needed
@@ -57,6 +73,7 @@ const Index = () => {
           <Stack.Screen name="shopprofile" component={ShopProfile} />
           <Stack.Screen name="Orders" component={Order} />
           <Stack.Screen name="shopeditprofile" component={ShopEditProfile} />
+          <Stack.Screen name="helpPage" component={HelpPage} />
           <Stack.Screen name="addCustomer" component={AddCustomer} />
           <Stack.Screen name="viewcustomer" component={ViewCustomer} />
           <Stack.Screen name="editcustomerprofile" component={EditCustomer} />
@@ -92,7 +109,9 @@ const Index = () => {
         </>
       ) : (
         <>
-          <Stack.Screen name="Onbordingroute" component={Onboardingroute} />
+          {isFirstTime && (
+            <Stack.Screen name="Onbordingroute" component={Onboardingroute} />
+          )}
           <Stack.Screen name="authroute" component={AuthRoute} />
         </>
       )}

@@ -84,6 +84,7 @@ const EditOrder = ({ route }) => {
         `${PORT}/getviewcustomerorder/${orderId}`
       );
       setEditOrder(response.data.rows);
+      console.log(response.data.rows)
       await getMeasurementData(response.data.rows[0].dress_id, response.data.rows[0].customer_id);
       setSelectedDressType(response.data.rows[0].dress_id);
       setSelectedMeasType(response.data.rows[0]);
@@ -102,7 +103,7 @@ const EditOrder = ({ route }) => {
 
     return `${day}/${month}/${year}`;
   };
-
+  const [measerementCurrentValue, setMeaserementCurrentValue] = useState(0);
   useFocusEffect(
     React.useCallback(() => {
       getCustomerOrder();
@@ -124,7 +125,7 @@ const EditOrder = ({ route }) => {
         customer_id: editOrder[0].customer_id || "",
         dress_id: editOrder[0].dress_id || "",
       });
-
+      setMeaserementCurrentValue(editOrder[0].customer_measurement_id || 0)
       // Fetch measurement data for the selected measurement type
       const selectedMeasurement = measurementData.find(
         (item) => item.id === editOrder[0].customer_measurement_id
@@ -188,21 +189,39 @@ const EditOrder = ({ route }) => {
 
   //update order
   const updateOrderData = async () => {
-    try {
-      const response = await axios.put(
-        `${PORT}/updatecustomerorderdata/${orderId}`,
-        {
-          ...newEditedOrder,
-          customer_measurement_id: selectedMeasType?.id, // Ensure this is included
+    console.log(measerementCurrentValue)
+    console.log(newEditedOrder);
+    if (newEditedOrder.customer_measurement_id !== measerementCurrentValue) {
+      try {
+        const response = await axios.put(
+          `${PORT}/updatecustomerorderdata/${orderId}`,
+          {
+            ...newEditedOrder,
+            customer_measurement_id: selectedMeasType?.id, // Ensure this is included
+          }
+        );
+        if (response.status === 200) {
+          navigation.goBack();
+        } else {
+          console.log("Error in add order");
         }
-      );
-      if (response.status === 200) {
-        navigation.goBack();
-      } else {
-        console.log("Error in add order");
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
+    }
+    else {
+      try {
+        const response = await axios.put(
+          `${PORT}/updatecustomerorderdata/${orderId}`, newEditedOrder
+        );
+        if (response.status === 200) {
+          navigation.goBack();
+        } else {
+          console.log("Error in add order");
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 

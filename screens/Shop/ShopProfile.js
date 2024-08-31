@@ -8,7 +8,6 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Fontisto } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
@@ -87,8 +86,20 @@ const ShopProfile = () => {
             }}
           />
         </TouchableOpacity>
-        <View style={{ width: "50%" }}>
+        <View style={{ width: "43%" }}>
           <Text style={styles.profileTitle}>Profile</Text>
+        </View>
+        <View style={{ width: "12%" }}>
+          <TouchableOpacity onPress={() => navigation.navigate("helpPage")}>
+            <MaterialIcons
+              name="question-mark"
+              size={20}
+              color="black"
+              style={{
+                marginTop: responsiveHeight(2),
+              }}
+            />
+          </TouchableOpacity>
         </View>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -96,7 +107,7 @@ const ShopProfile = () => {
           style={{
             backgroundColor: whiteColor,
             flex: 1,
-            height: responsiveHeight(97),
+            height: responsiveHeight(105),
           }}
         >
           <View>
@@ -220,6 +231,25 @@ const ShopProfile = () => {
                       />
                     </Text>
                     <Text style={styles.prolistfont}>Profile</Text>
+                  </View>
+                  <Text>
+                    <AntDesign name="right" size={16} color="black" />
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("helpPage")}
+              >
+                <View style={styles.spacebetween}>
+                  <View style={styles.flexstart}>
+                    <Text style={styles.proicon}>
+                      <MaterialIcons
+                        name="question-mark"
+                        size={20}
+                        color="black"
+                      />
+                    </Text>
+                    <Text style={styles.prolistfont}>Help</Text>
                   </View>
                   <Text>
                     <AntDesign name="right" size={16} color="black" />

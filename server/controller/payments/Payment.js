@@ -87,7 +87,7 @@ const getPaymentDataWithId = (req, res) => {
 
 const getDataForTotalDue = (req, res) => {
     const id = req.params.id;
-    const q = `SELECT price,qty FROM public.customer_order WHERE customer_id=${id}`;
+    const q = `SELECT price,qty,order_date FROM public.customer_order WHERE customer_id=${id}`;
 
     client.query(q, (err, data) => {
         if (err) {
@@ -138,6 +138,5 @@ const updatePayment = (req, res) => {
         return res.sendStatus(200);
     });
 };
-
 
 module.exports = { addPaymentData, getAllPaymentData, getallpaymentdataForShop, getdatafortotaldueShop, getPaymentDataWithId, deletePayment, updatePayment, getDataForTotalDue }

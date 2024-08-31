@@ -52,17 +52,18 @@ const ShopEditProfile = () => {
 
   //image picker
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 5],
-      quality: 1,
-    });
+    // let result = await ImagePicker.launchImageLibraryAsync({
+    //   mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    //   allowsEditing: true,
+    //   aspect: [4, 5],
+    //   quality: 1,
+    // });
 
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      setImageName(result.assets[0].fileName);
-    }
+    // if (!result.canceled) {
+    //   setImage(result.assets[0].uri);
+    //   setImageName(result.assets[0].fileName);
+    // }
+    alert("This feature is Coming Soon");
   };
 
   useFocusEffect(

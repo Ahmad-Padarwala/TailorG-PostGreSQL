@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -36,6 +36,7 @@ const ViewMeasurement = ({ route }) => {
   const customerName = route.params.cust_name;
   const { userToken } = useContext(AuthContext);
   const [viewMeasurement, setViewMeasurement] = useState([]);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [newMeasurementData, setNewMeasurementData] = useState([]);
   const [dressId, setDressId] = useState(null);
 
@@ -97,18 +98,21 @@ const ViewMeasurement = ({ route }) => {
 
     return `${day}/${month}/${year}`;
   };
-
   const refreshTheMeasData = async () => {
     try {
+      console.log("ahmad22")
+      console.log(userToken, dressId)
       // Get the new data
       const response = await axios.get(`${PORT}/getdressbodypartswithcid/${userToken}/${dressId}`);
       const newMeasurementData = response.data.rows;
-
+      console.log("1")
       // Check for new body parts
       const oldBodyPartIds = viewMeasurement.map(item => item.dp_body_part_id);
 
       newMeasurementData.forEach(newItem => {
+        console.log("2")
         if (!oldBodyPartIds.includes(newItem.body_part_id)) {
+          console.log("3")
           axios.post(`${PORT}/addnewbodypartinmeasurement`, {
             dress_part_id: newItem.id,
             mea_value: 0,
@@ -118,40 +122,80 @@ const ViewMeasurement = ({ route }) => {
           })
             .then(() => {
               getViewMeasurementData();
-              Toast.show({
-                type: 'success',
-                text1: 'success',
-                text2: "Measurement Body Part Added Successfully",
-                visibilityTime: 5000, // Display the toast for 5 seconds
-                autoHide: true,
-                position: "bottom"
-              });
+              console.log("4")
             })
             .catch((err) => {
               console.error(err);
+              console.log("5")
             });
         }
-        Toast.show({
-          type: 'success',
-          text1: 'success',
-          text2: "Measurement Body Part is Upto date",
-          visibilityTime: 5000, // Display the toast for 5 seconds
-          autoHide: true,
-          position: "bottom"
-        });
       });
     } catch (err) {
+      console.log("6")
       console.error(err);
     }
   };
+  // const refreshTheMeasData = async () => {
+  //   try {
+  //     // Get the new data
+  //     const response = await axios.get(`${PORT}/getdressbodypartswithcid/${userToken}/${dressId}`);
+  //     const newMeasurementData = response.data.rows;
 
+  //     // Check for new body parts
+  //     const oldBodyPartIds = viewMeasurement.map(item => item.dp_body_part_id);
+
+  //     newMeasurementData.forEach(newItem => {
+  //       if (!oldBodyPartIds.includes(newItem.body_part_id)) {
+  //         axios.post(`${PORT}/addnewbodypartinmeasurement`, {
+  //           dress_part_id: newItem.id,
+  //           mea_value: 0,
+  //           customer_measurement_id: viewMeasurement[0].cm_id,
+  //           customer_id: cust_id,
+  //           shop_id: userToken,
+  //         })
+  //           .then(() => {
+  //             getViewMeasurementData();
+  //             Toast.show({
+  //               type: 'success',
+  //               text1: 'success',
+  //               text2: "Measurement Body Part Added Successfully",
+  //               visibilityTime: 5000, // Display the toast for 5 seconds
+  //               autoHide: true,
+  //               position: "bottom"
+  //             });
+  //           })
+  //           .catch((err) => {
+  //             console.error(err);
+  //           });
+  //       }
+  //       Toast.show({
+  //         type: 'success',
+  //         text1: 'success',
+  //         text2: "Measurement Body Part is Upto date",
+  //         visibilityTime: 5000, // Display the toast for 5 seconds
+  //         autoHide: true,
+  //         position: "bottom"
+  //       });
+  //     });
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
   useFocusEffect(
     React.useCallback(() => {
       getViewMeasurementData();
       getPathData();
-    }, [])
+      setIsDataLoaded(true);
+    }, []) // Dependencies array ensures the effect runs when these values change
   );
+  useEffect(() => {
+    // Call refreshTheMeasData only if data is loaded and userToken is available
+    if (isDataLoaded && dressId) {
+      refreshTheMeasData();
+    }
+  }, [isDataLoaded, dressId]);
+
   const truncateString = (text, len) => {
     if (text.length > len) {
       return text.substring(0, len) + "...";
@@ -210,18 +254,6 @@ const ViewMeasurement = ({ route }) => {
           >
             {truncateString(customerName, 6)} Measurement
           </Text>
-        </View>
-        <View style={{ width: responsiveWidth(8) }}>
-          <TouchableOpacity onPress={() => refreshTheMeasData()}>
-            <MaterialIcons
-              name="autorenew"
-              size={23}
-              color="black"
-              style={{
-                marginTop: responsiveHeight(0.4),
-              }}
-            />
-          </TouchableOpacity>
         </View>
       </View>
       <View style={styles.line70}></View>

@@ -314,8 +314,9 @@ const ViewDress = ({ route }) => {
           >
             Body Parts
           </Text>
+
           <FlatList
-            data={DressBodyParts}
+            data={[...DressBodyParts, { id: "addButton" }]} // Add a custom item at the end
             keyExtractor={(item) => item.id}
             numColumns={3}
             showsVerticalScrollIndicator={false}
@@ -323,32 +324,67 @@ const ViewDress = ({ route }) => {
             style={{
               marginVertical: responsiveHeight(1),
             }}
-            renderItem={({ item }) => (
-              <View
-                style={[
-                  styles.dressContainer,
-                  {
-                    paddingTop: responsiveWidth(1.3),
-                    paddingBottom: responsiveWidth(0.4),
-                    paddingHorizontal: responsiveHeight(0.7),
-                    position: "relative",
-                    width: responsiveWidth(25.9),
-                  },
-                ]}
-              >
-                <View
-                  style={[
-                    styles.imageContainer,
-                    { height: responsiveHeight(10) },
-                  ]}
-                >
-                  <Text style={{ textAlign: "center", fontFamily: "Regular" }}>
-                    {bodyPartsNames[item.body_part_id] || "Loading..."}
-                  </Text>
-                </View>
-              </View>
-            )}
+            renderItem={({ item }) => {
+              if (item.id === "addButton") {
+                // Render the "+" view at the end of the list
+                return (
+                  <TouchableOpacity onPress={toggleModalVisibility}>
+                    <View
+                      style={[
+                        styles.dressContainer,
+                        {
+                          paddingTop: responsiveWidth(1.3),
+                          paddingBottom: responsiveWidth(0.4),
+                          paddingHorizontal: responsiveHeight(0.7),
+                          position: "relative",
+                          width: responsiveWidth(25.9),
+                        },
+                      ]}
+                    >
+                      <View
+                        style={[
+                          styles.imageContainer,
+                          { height: responsiveHeight(10), backgroundColor: primaryColor, },
+                        ]}
+                      >
+                        <Text style={{ textAlign: "center", verticalAlign: "center", fontFamily: "Regular", color: whiteColor }}>
+                          + Add New
+                        </Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                );
+              } else {
+                // Render the regular items
+                return (
+                  <View
+                    style={[
+                      styles.dressContainer,
+                      {
+                        paddingTop: responsiveWidth(1.3),
+                        paddingBottom: responsiveWidth(0.4),
+                        paddingHorizontal: responsiveHeight(0.7),
+                        position: "relative",
+                        width: responsiveWidth(25.9),
+                      },
+                    ]}
+                  >
+                    <View
+                      style={[
+                        styles.imageContainer,
+                        { height: responsiveHeight(10) },
+                      ]}
+                    >
+                      <Text style={{ textAlign: "center", fontFamily: "Regular" }}>
+                        {bodyPartsNames[item.body_part_id] || "Loading..."}
+                      </Text>
+                    </View>
+                  </View>
+                );
+              }
+            }}
           />
+
         </View>
         {/* dropdown modal */}
         <Modal
@@ -646,20 +682,6 @@ const ViewDress = ({ route }) => {
             </View>
           </View>
         </Modal>
-        {/* add model */}
-        <View style={styles.addmaincontainer}>
-          <TouchableOpacity onPress={toggleModalVisibility}>
-            <View style={styles.innercontainer}>
-              <Text style={styles.pluscomptext}>
-                <Ionicons
-                  name="add-outline"
-                  size={35}
-                  color={whiteColor}
-                ></Ionicons>
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
       </SafeAreaView >
     </>
   );

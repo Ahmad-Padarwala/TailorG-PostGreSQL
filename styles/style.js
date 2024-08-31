@@ -1074,7 +1074,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 110,
     borderRadius: 10,
   },
-
   //login/registration
   loginHead: {
     flexDirection: "row",
@@ -1098,6 +1097,7 @@ const styles = StyleSheet.create({
     height: 200,
     width: 160,
   },
+
   form: {
     marginHorizontal: responsiveWidth(8),
   },
@@ -1136,6 +1136,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 3,
     elevation: 5,
+  },
+  resendBtn: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-end",
+  },
+  resendbtntext: {
+    color: primaryColor,
   },
   onlybtntext: {
     color: whiteColor,
@@ -1910,6 +1918,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     fontSize: responsiveFontSize(1),
     borderRightWidth: 0.5,
+    fontWeight: 'bold',
     fontFamily: "Regular",
     borderRightColor: secondaryColor,
     paddingLeft: responsiveWidth(1),

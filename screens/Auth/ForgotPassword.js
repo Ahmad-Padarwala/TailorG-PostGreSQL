@@ -31,6 +31,8 @@ const ForgotPassword = () => {
     otp: "",
   })
   const [isOTPMode, setIsOTPMode] = useState(false);
+  const [isResendDisabled, setIsResendDisabled] = useState(true);
+  const [countdown, setCountdown] = useState(30);
   const handleChange = (name, value) => {
     setForgotPassword((prevRegData) => ({
       ...prevRegData,
@@ -54,6 +56,8 @@ const ForgotPassword = () => {
       if (res.data.success) {
         setIsOTPMode(true);
         Alert.alert("OTP Sent", "OTP sent to your contact number");
+        setIsResendDisabled(true);
+        setCountdown(30); // Reset countdown
       } else {
         Alert.alert("Error", res.data.msg);
       }
@@ -103,7 +107,16 @@ const ForgotPassword = () => {
     }
   }
 
-
+  useEffect(() => {
+    if (countdown > 0) {
+      const timerId = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timerId); // Cleanup timer on component unmount
+    } else {
+      setIsResendDisabled(false); // Enable the Resend OTP button when countdown reaches 0
+    }
+  }, [countdown]);
   return (
     <>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -185,20 +198,15 @@ const ForgotPassword = () => {
 
             {!isOTPMode ? (
               <View style={[styles.inputfield]}>
-                {
-                  !vop ? (
-                    <TouchableOpacity
-                      style={styles.onlybtn}
-                      onPress={requestOTP}
-                      disabled={!validateContact(forgotPassword.contact_number)}
-                    >
-                      <Text style={styles.onlybtntext}>Send OTP</Text>
-                    </TouchableOpacity>
-                  ) : (
-                    ""
-                  )
-                }
-
+                {!vop && (
+                  <TouchableOpacity
+                    style={styles.onlybtn}
+                    onPress={requestOTP}
+                    disabled={!validateContact(forgotPassword.contact_number)}
+                  >
+                    <Text style={styles.onlybtntext}>Send OTP</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             ) : (
               <View style={styles.inputfield}>
@@ -216,6 +224,16 @@ const ForgotPassword = () => {
                   disabled={!forgotPassword.otp}
                 >
                   <Text style={styles.onlybtntext}>Verify OTP</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.resendBtn, isResendDisabled && { opacity: 0.5 }]}
+                  onPress={requestOTP}
+                  disabled={isResendDisabled}
+                >
+                  <Text style={styles.resendbtntext}>{isResendDisabled
+                    ? `Resend OTP in ${countdown} seconds`
+                    : "Resend OTP"}
+                  </Text>
                 </TouchableOpacity>
               </View>
             )}

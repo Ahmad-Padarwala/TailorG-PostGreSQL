@@ -37,8 +37,8 @@ const Onbording2 = () => {
           <View style={styles.content}>
             <Text style={styles.headingtext}>We Make, You Wear</Text>
             <Text style={styles.paratext}>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi
-              itaque.
+              TailorG crafts your perfect fit. Customize with ease and enjoy tailored style.
+
             </Text>
           </View>
 

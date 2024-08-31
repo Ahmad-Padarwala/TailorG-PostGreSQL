@@ -2,7 +2,7 @@ const axios = require("axios");
 
 const smsAPI = {
     sendOTP: async (contactNumber, otp) => {
-        const url = `Your Sms Api Key`;
+        const url = `YOUR SMS API URL HERE`;
         try {
             const response = await axios.post(url);
             return response.data;

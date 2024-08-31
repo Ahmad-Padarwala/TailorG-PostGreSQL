@@ -62,8 +62,7 @@ const Onbording1 = () => {
           <View style={styles.content}>
             <Text style={styles.headingtext}>Welcome To TailorG</Text>
             <Text style={styles.paratext}>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Excepturi
-              itaque.
+              TailorG simplifies clothing customization and ordering. Choose your style and fit with ease.
             </Text>
           </View>
 
