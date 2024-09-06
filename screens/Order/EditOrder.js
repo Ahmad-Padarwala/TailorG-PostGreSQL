@@ -72,7 +72,7 @@ const EditOrder = ({ route }) => {
     await axios
       .get(`${PORT}/getpathesdata`)
       .then((res) => {
-        setPathData(res.data[0]);
+        setPathData(res.data.rows[0].image_path);
       })
       .catch((err) => {
         console.error(err);
@@ -84,7 +84,6 @@ const EditOrder = ({ route }) => {
         `${PORT}/getviewcustomerorder/${orderId}`
       );
       setEditOrder(response.data.rows);
-      console.log(response.data.rows)
       await getMeasurementData(response.data.rows[0].dress_id, response.data.rows[0].customer_id);
       setSelectedDressType(response.data.rows[0].dress_id);
       setSelectedMeasType(response.data.rows[0]);
@@ -189,8 +188,6 @@ const EditOrder = ({ route }) => {
 
   //update order
   const updateOrderData = async () => {
-    console.log(measerementCurrentValue)
-    console.log(newEditedOrder);
     if (newEditedOrder.customer_measurement_id !== measerementCurrentValue) {
       try {
         const response = await axios.put(
@@ -292,7 +289,7 @@ const EditOrder = ({ route }) => {
                       ) : (
                         <Image
                           source={{
-                            uri: `${PORT}/uploads/dresses/${editOrder[0].dress_image}`,
+                            uri: `${pathData}/uploads/dresses/${editOrder[0].dress_image}`,
                           }}
                           style={{
                             width: responsiveWidth(8),

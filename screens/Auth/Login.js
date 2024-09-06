@@ -60,7 +60,6 @@ const Login = () => {
       alert("Insert Password");
       return;
     }
-
     try {
       const res = await axios.post(`${PORT}/shoplogin`, loginData);
       const { success, msg } = res.data;
@@ -71,7 +70,7 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Login error:", error);
-      Alert.alert("Error", "Failed to login. Please try again later.");
+      alert("In Catch");
     }
   };
   if (!Fontloaded) {

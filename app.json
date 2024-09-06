@@ -2,7 +2,7 @@
   "expo": {
     "name": "TailorG",
     "slug": "TailorG",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,7 +16,7 @@
     },
     "android": {
       "package": "com.ansi.tailorg",
-      "versionCode": 5,
+      "versionCode": 8,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -27,7 +27,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "d6c530a7-da4e-4838-92c5-fe36fa7d68dc"
+        "projectId": "b70b494f-c23c-4b5f-8fd3-0b3cf5f8ea5d"
       }
     }
   }

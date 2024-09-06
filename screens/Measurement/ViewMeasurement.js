@@ -55,7 +55,7 @@ const ViewMeasurement = ({ route }) => {
     await axios
       .get(`${PORT}/getpathesdata`)
       .then((res) => {
-        setPathData(res.data[0]);
+        setPathData(res.data.rows[0].image_path);
       })
       .catch((err) => {
         console.error(err);
@@ -100,19 +100,14 @@ const ViewMeasurement = ({ route }) => {
   };
   const refreshTheMeasData = async () => {
     try {
-      console.log("ahmad22")
-      console.log(userToken, dressId)
       // Get the new data
       const response = await axios.get(`${PORT}/getdressbodypartswithcid/${userToken}/${dressId}`);
       const newMeasurementData = response.data.rows;
-      console.log("1")
       // Check for new body parts
       const oldBodyPartIds = viewMeasurement.map(item => item.dp_body_part_id);
 
       newMeasurementData.forEach(newItem => {
-        console.log("2")
         if (!oldBodyPartIds.includes(newItem.body_part_id)) {
-          console.log("3")
           axios.post(`${PORT}/addnewbodypartinmeasurement`, {
             dress_part_id: newItem.id,
             mea_value: 0,
@@ -122,16 +117,13 @@ const ViewMeasurement = ({ route }) => {
           })
             .then(() => {
               getViewMeasurementData();
-              console.log("4")
             })
             .catch((err) => {
               console.error(err);
-              console.log("5")
             });
         }
       });
     } catch (err) {
-      console.log("6")
       console.error(err);
     }
   };
@@ -288,7 +280,7 @@ const ViewMeasurement = ({ route }) => {
                     ) : (
                       <Image
                         source={{
-                          uri: `${PORT}/uploads/dresses/${group.dress_image}`,
+                          uri: `${pathData}/uploads/dresses/${group.dress_image}`,
                         }}
                         style={{
                           width: responsiveWidth(8),

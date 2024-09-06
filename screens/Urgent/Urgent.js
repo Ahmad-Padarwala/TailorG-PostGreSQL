@@ -54,7 +54,7 @@ const Urgent = () => {
     await axios
       .get(`${PORT}/getpathesdata`)
       .then((res) => {
-        setPathData(res.data[0]);
+        setPathData(res.data.rows[0].image_path);
         setLoading(false);
       })
       .catch((err) => {
@@ -147,7 +147,7 @@ const Urgent = () => {
                           ) : (
                             <Image
                               source={{
-                                uri: `${PORT}/uploads/dresses/${item.dress_image}`,
+                                uri: `${pathData}/uploads/dresses/${item.dress_image}`,
                               }}
                               style={{
                                 width: "70%",

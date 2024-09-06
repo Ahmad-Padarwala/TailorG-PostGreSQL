@@ -47,7 +47,7 @@ const Measurement = ({ route }) => {
     await axios
       .get(`${PORT}/getpathesdata`)
       .then((res) => {
-        setPathData(res.data[0]);
+        setPathData(res.data.rows[0].image_path);
       })
       .catch((err) => {
         console.error(err);
@@ -191,7 +191,7 @@ const Measurement = ({ route }) => {
                       ) : (
                         <Image
                           source={{
-                            uri: `${PORT}/uploads/dresses/${item.dress_image}`,
+                            uri: `${pathData}/uploads/dresses/${item.dress_image}`,
                           }}
                           style={{
                             width: responsiveWidth(8),

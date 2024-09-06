@@ -53,7 +53,7 @@ const ViewOrder = ({ route }) => {
     await axios
       .get(`${PORT}/getpathesdata`)
       .then((res) => {
-        setPathData(res.data[0]);
+        setPathData(res.data.rows[0].image_path);
       })
       .catch((err) => {
         console.error(err);
@@ -219,7 +219,7 @@ const ViewOrder = ({ route }) => {
                     ) : (
                       <Image
                         source={{
-                          uri: `${PORT}/uploads/dresses/${viewOrder[0].dress_image}`,
+                          uri: `${pathData}/uploads/dresses/${viewOrder[0].dress_image}`,
                         }}
                         style={{
                           width: "70%",

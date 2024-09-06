@@ -78,7 +78,7 @@ const Home = () => {
     await axios
       .get(`${PORT}/getpathesdata`)
       .then((res) => {
-        setPathData(res.data[0]);
+        setPathData(res.data.rows[0].image_path);
       })
       .catch((err) => {
         console.error(err);
@@ -565,7 +565,7 @@ const Home = () => {
                       }}
                     >
                       <Image
-                        source={{ uri: `${PORT}/uploads/bank/${bankDetail[0].image}` }}
+                        source={{ uri: `${pathData}/uploads/bank/${bankDetail[0].image}` }}
                         style={{ width: "100%", height: responsiveHeight(12) }}
                       />
                     </View>

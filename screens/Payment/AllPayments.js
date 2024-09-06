@@ -393,7 +393,6 @@ const AllPayments = ({ route }) => {
                             justifyContent: "space-between",
                             paddingBottom: responsiveHeight(1),
                             borderBottomColor: "#0000001A",
-                            paddingBottom: responsiveHeight(1),
                             borderBottomWidth: 1,
                           }}
                         >
@@ -463,7 +462,7 @@ const AllPayments = ({ route }) => {
                       keyExtractor={(item) => item.id}
                       showsVerticalScrollIndicator={false}
                       style={{
-                        marginBottom: responsiveHeight(67),
+                        marginBottom: responsiveHeight(64)
                       }}
                       renderItem={({ item }) => (
                         <TouchableOpacity

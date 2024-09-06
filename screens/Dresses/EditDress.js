@@ -37,7 +37,7 @@ const EditDress = ({ route }) => {
     await axios
       .get(`${PORT}/getpathesdata`)
       .then((res) => {
-        setPathData(res.data[0]);
+        setPathData(res.data.rows[0].image_path);
       })
       .catch((err) => {
         console.error(err);
@@ -278,7 +278,7 @@ const EditDress = ({ route }) => {
                   />
                 ) : (
                   <Image
-                    source={{ uri: `${PORT}/uploads/dresses/${image}` }}
+                    source={{ uri: `${pathData}/uploads/dresses/${image}` }}
                     style={{ width: "90%", height: "90%" }}
                   />
                 )}

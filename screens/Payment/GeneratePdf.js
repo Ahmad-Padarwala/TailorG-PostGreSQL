@@ -203,7 +203,7 @@ const GeneratePdf = () => {
     await axios
       .get(`${PORT}/getpathesdata`)
       .then((res) => {
-        setPathData(res.data[0]);
+        setPathData(res.data.rows[0].image_path);
       })
       .catch((err) => {
         console.error(err);
@@ -293,15 +293,19 @@ const GeneratePdf = () => {
       const balanceColor = currentBalance < 0 ? dangerColor : primaryColor;
 
       return `
-        <tr>
+       <tr>
           <td>${new Date(item.date).toLocaleDateString()}</td>
           <td>${item.type === "customer"
           ? "Opening Amount"
           : item.remark || (item.type === "order" ? item.dress_name || "No Dress Name" : "No Remark")
         }</td>
-          <td>${item.type === "order" ? -orderPrice * qty : 0}</td>
-          <td style="color:#56BC1F">${item.type !== "order" ? amount.toFixed(2) : ""}</td>
-          <td>${item.type !== "order" ? rounded.toFixed(2) : ""}</td>
+          <td style="color: ${balanceColor};">${item.type === "order" ? -orderPrice * qty : 0}</td>
+          <td style="color:#56BC1F">
+            ${item.type === "customer" || item.type === "order" ? "" : parseFloat(item.amount).toFixed(2)}
+          </td>
+          <td>
+            ${item.type === "customer" || item.type === "order" ? "" : parseFloat(item.rounded).toFixed(2)}
+          </td>
           <td style="color: ${balanceColor};">${currentBalance.toFixed(2)}</td>
         </tr>
       `;
@@ -413,7 +417,7 @@ const GeneratePdf = () => {
 ${bankDetail.length > 0 ? `
   <div style="display: flex; align-items: center; border-radius: 6px; background-color: white; box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; margin-bottom: 2px;">
     <div style="padding:20px;">
-      <img src="${PORT}/uploads/bank/${bankDetail[0].image}"  width="140px" height="140px" />
+      <img src="${pathData}/uploads/bank/${bankDetail[0].image}"  width="140px" height="140px" />
     </div>
     <div>
       <p style="margin: 5px 0px;"><strong>${shopData.last_name} ${shopData.first_name}</strong></p>
@@ -708,8 +712,6 @@ ${bankDetail.length > 0 ? `
               keyExtractor={(item) => item.id}
               showsVerticalScrollIndicator={false}
               renderItem={({ index, item }) => {
-
-
                 const orderPrice = parseFloat(item.order_price) || 0;
                 const qty = parseFloat(item.qty) || 0;
                 const amount = parseFloat(item.amount) || 0;
@@ -835,7 +837,7 @@ ${bankDetail.length > 0 ? `
                     }}
                   >
                     <Image
-                      source={{ uri: `${PORT}/uploads/bank/${bankDetail[0].image}` }}
+                      source={{ uri: `${pathData}/uploads/bank/${bankDetail[0].image}` }}
                       style={{ width: "100%", height: responsiveHeight(12) }}
                     />
                   </View>

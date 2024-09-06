@@ -26,7 +26,6 @@ import {
 } from "react-native-responsive-dimensions";
 import axios from "axios";
 import Add from "../../components/Add";
-const { width, height } = Dimensions.get('screen');
 const PORT = process.env.EXPO_PUBLIC_API_URL;
 
 const CustomerOrder = ({ route }) => {
@@ -58,7 +57,7 @@ const CustomerOrder = ({ route }) => {
     await axios
       .get(`${PORT}/getpathesdata`)
       .then((res) => {
-        setPathData(res.data[0]);
+        setPathData(res.data.rows[0].image_path);
         setLoading(false);
       })
       .catch((err) => {
@@ -226,7 +225,7 @@ const CustomerOrder = ({ route }) => {
                             ) : (
                               <Image
                                 source={{
-                                  uri: `${PORT}/uploads/dresses/${item.dress_image}`,
+                                  uri: `${pathData}/uploads/dresses/${item.dress_image}`,
                                 }}
                                 style={{
                                   width: "70%",
